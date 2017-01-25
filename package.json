@@ -1,10 +1,23 @@
 {
   "name": "prebuildify",
   "version": "0.0.0",
-  "description": "WIP - nothing to see here",
+  "description": "Prebuild native node modules and bundle the prebuilds with an npm release",
   "main": "index.js",
-  "dependencies": {},
-  "devDependencies": {},
+  "dependencies": {
+    "execspawn": "^1.0.1",
+    "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "node-abi": "^1.0.3"
+  },
+  "devDependencies": {
+    "standard": "^8.6.0"
+  },
+  "bin": {
+    "prebuildify": "./index.js"
+  },
+  "scripts": {
+    "test": "standard"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/mafintosh/prebuildify.git"
