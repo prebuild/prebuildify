@@ -1,7 +1,7 @@
 {
   "name": "prebuildify",
   "version": "0.0.0",
-  "description": "Prebuild native node modules and bundle the prebuilds with an npm release",
+  "description": "Create and package prebuilds for native modules",
   "main": "index.js",
   "dependencies": {
     "execspawn": "^1.0.1",

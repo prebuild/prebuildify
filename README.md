@@ -1,6 +1,6 @@
 # prebuildify
 
-Prebuild native node modules and bundle the prebuilds with an npm release
+Create and package prebuilds for native modules
 
 ```
 npm install -g prebuildify
