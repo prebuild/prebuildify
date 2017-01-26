@@ -74,29 +74,29 @@ function preinstall (cb) {
 }
 
 function build (target, runtime, cb) {
-  var argv = [
+  var args = [
     'rebuild',
     '--target=' + target
   ]
 
   if (argv.arch) {
-    argv.push('--target_arch=' + argv.arch)
+    args.push('--target_arch=' + argv.arch)
   }
 
   if (runtime === 'electron') {
-    argv.push('--runtime=electron')
-    argv.push('--dist-url=https://atom.io/download/electron')
+    args.push('--runtime=electron')
+    args.push('--dist-url=https://atom.io/download/electron')
   }
 
   if (argv.debug) {
-    argv.push('--debug')
+    args.push('--debug')
   } else {
-    argv.push('--release')
+    args.push('--release')
   }
 
   var output = path.join(cwd, 'build', argv.debug ? 'Debug' : 'Release')
 
-  var child = proc.spawn('node-gyp', argv, {
+  var child = proc.spawn('node-gyp', args, {
     cwd: cwd,
     stdio: argv.quiet ? 'ignore' : 'inherit'
   })
