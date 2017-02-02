@@ -96,7 +96,7 @@ function build (target, runtime, cb) {
 
   var output = path.join(cwd, 'build', argv.debug ? 'Debug' : 'Release')
 
-  var child = proc.spawn('node-gyp', args, {
+  var child = proc.spawn(os.platform() === 'win32' ? 'node-gyp.cmd' : 'node-gyp', args, {
     cwd: cwd,
     stdio: argv.quiet ? 'ignore' : 'inherit'
   })
