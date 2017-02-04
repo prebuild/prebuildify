@@ -17,7 +17,10 @@ var argv = minimist(process.argv.slice(2), {
 var arch = argv.arch || os.arch()
 var platform = argv.platform || os.platform()
 var cwd = argv._[0] || '.'
-var builds = path.join(cwd, 'prebuilds')
+var builds = path.join(cwd, 'prebuilds', platform + '-' + arch)
+var output = path.join(cwd, 'build', argv.debug ? 'Debug' : 'Release')
+
+if (arch) process.env.ARCH = process.env.PREBUILD_ARCH = arch
 
 var targets = [].concat(argv.target || []).map(function (v) {
   if (v.indexOf('@') === -1) v = 'node@' + v
@@ -52,14 +55,40 @@ function loop (err) {
   var next = targets.shift()
   if (!next) return
 
-  build(next.target, next.runtime, function (err, filename) {
+  copySharedLibs(output, builds, function (err) {
     if (err) return loop(err)
 
-    var a = abi.getAbi(next.target, next.runtime)
-    var name = platform + '-' + arch + '-' + next.runtime + '-' + a + '.node'
-    var dest = path.join(builds, name)
+    build(next.target, next.runtime, function (err, filename) {
+      if (err) return loop(err)
 
-    fs.rename(filename, dest, loop)
+      var name = next.runtime + '-' + abi.getAbi(next.target, next.runtime) + '.node'
+      var dest = path.join(builds, name)
+
+      fs.rename(filename, dest, loop)
+    })
+  })
+}
+
+function copySharedLibs (builds, folder, cb) {
+  fs.readdir(builds, function (err, files) {
+    if (err) return cb(err)
+
+    var libs = files.filter(function (name) {
+      return /\.dylib$/.test(name) || /\.so(\.\d+)?$/.test(name) || /\.dll$/.test(name)
+    })
+
+    loop()
+
+    function loop (err) {
+      if (err) return cb(err)
+      var next = libs.shift()
+      if (!next) return cb()
+
+      strip(path.join(builds, next), function (err) {
+        if (err) return cb(err)
+        copy(path.join(builds, next), path.join(folder, next), loop)
+      })
+    }
   })
 }
 
@@ -94,8 +123,6 @@ function build (target, runtime, cb) {
     args.push('--release')
   }
 
-  var output = path.join(cwd, 'build', argv.debug ? 'Debug' : 'Release')
-
   var child = proc.spawn(os.platform() === 'win32' ? 'node-gyp.cmd' : 'node-gyp', args, {
     cwd: cwd,
     stdio: argv.quiet ? 'ignore' : 'inherit'
@@ -106,7 +133,6 @@ function build (target, runtime, cb) {
 
     findBuild(output, function (err, output) {
       if (err) return cb(err)
-      if (!argv.strip) return cb(null, output)
 
       strip(output, function (err) {
         if (err) return cb(err)
@@ -130,7 +156,7 @@ function findBuild (dir, cb) {
 }
 
 function strip (file, cb) {
-  if (platform !== 'darwin' && platform !== 'linux') return process.nextTick(cb)
+  if (!argv.strip || platform !== 'darwin' && platform !== 'linux') return process.nextTick(cb)
 
   var args = platform === 'darwin' ? [file, '-Sx'] : [file, '--strip-all']
   var child = proc.spawn('strip', args, {stdio: 'ignore'})
@@ -143,4 +169,17 @@ function strip (file, cb) {
 
 function spawnError (name, code) {
   return new Error(name + ' exited with ' + code)
+}
+
+function copy (a, b, cb) {
+  fs.stat(a, function (err, st) {
+    if (err) return cb(err)
+    fs.readFile(a, function (err, buf) {
+      if (err) return cb(err)
+      fs.writeFile(b, buf, function (err) {
+        if (err) return cb(err)
+        fs.chmod(b, st.mode, cb)
+      })
+    })
+  })
 }
