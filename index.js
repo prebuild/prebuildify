@@ -20,7 +20,7 @@ var cwd = argv._[0] || '.'
 var builds = path.join(cwd, 'prebuilds', platform + '-' + arch)
 var output = path.join(cwd, 'build', argv.debug ? 'Debug' : 'Release')
 
-if (arch) process.env.ARCH = process.env.PREBUILD_ARCH = arch
+process.env.ARCH = process.env.PREBUILD_ARCH = arch
 
 var targets = [].concat(argv.target || []).map(function (v) {
   if (v.indexOf('@') === -1) v = 'node@' + v
