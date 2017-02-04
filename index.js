@@ -71,7 +71,7 @@ function loop (err) {
 
 function copySharedLibs (builds, folder, cb) {
   fs.readdir(builds, function (err, files) {
-    if (err) return cb(err)
+    if (err) return cb()
 
     var libs = files.filter(function (name) {
       return /\.dylib$/.test(name) || /\.so(\.\d+)?$/.test(name) || /\.dll$/.test(name)
