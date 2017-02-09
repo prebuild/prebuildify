@@ -47,7 +47,7 @@ if (!fs.existsSync(path.join(cwd, 'package.json'))) {
 }
 
 mkdirp.sync(builds)
-preinstall(loop)
+loop(null)
 
 function loop (err) {
   if (err) throw err
@@ -55,16 +55,24 @@ function loop (err) {
   var next = targets.shift()
   if (!next) return
 
-  copySharedLibs(output, builds, function (err) {
+  run(argv.preinstall, function (err) {
     if (err) return loop(err)
 
     build(next.target, next.runtime, function (err, filename) {
       if (err) return loop(err)
 
-      var name = next.runtime + '-' + abi.getAbi(next.target, next.runtime) + '.node'
-      var dest = path.join(builds, name)
+      run(argv.postinstall, function (err) {
+        if (err) return loop(err)
 
-      fs.rename(filename, dest, loop)
+        copySharedLibs(output, builds, function (err) {
+          if (err) return loop(err)
+
+          var name = next.runtime + '-' + abi.getAbi(next.target, next.runtime) + '.node'
+          var dest = path.join(builds, name)
+
+          fs.rename(filename, dest, loop)
+        })
+      })
     })
   })
 }
@@ -92,12 +100,12 @@ function copySharedLibs (builds, folder, cb) {
   })
 }
 
-function preinstall (cb) {
-  if (!argv.preinstall) return cb()
+function run (cmd, cb) {
+  if (!cmd) return cb()
 
-  var child = execspawn(argv.preinstall, {cwd: cwd, stdio: 'inherit'})
+  var child = execspawn(cmd, {cwd: cwd, stdio: 'inherit'})
   child.on('exit', function (code) {
-    if (code) return cb(spawnError(argv.preinstall, code))
+    if (code) return cb(spawnError(cmd, code))
     cb()
   })
 }
