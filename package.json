@@ -7,7 +7,7 @@
     "execspawn": "^1.0.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
-    "node-abi": "^1.0.3"
+    "node-abi": "^2.0.0"
   },
   "devDependencies": {
     "standard": "^8.6.0"

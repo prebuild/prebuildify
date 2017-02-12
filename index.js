@@ -33,7 +33,7 @@ var targets = [].concat(argv.target || []).map(function (v) {
 
 // TODO: also support --lts and get versions from travis
 if (argv.all) {
-  targets = abi.allTargets.slice(0)
+  targets = abi.supportedTargets.slice(0)
 }
 
 if (!targets.length) {
