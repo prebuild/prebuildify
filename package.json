@@ -10,7 +10,7 @@
     "node-abi": "^2.0.0"
   },
   "devDependencies": {
-    "standard": "^8.6.0"
+    "standard": "*"
   },
   "bin": {
     "prebuildify": "./index.js"
