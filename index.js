@@ -8,6 +8,7 @@ var fs = require('fs')
 var minimist = require('minimist')
 var abi = require('node-abi')
 var mkdirp = require('mkdirp')
+var xtend = require('xtend/immutable')
 
 var argv = minimist(process.argv.slice(2), {
   alias: {target: 't', version: 'v', all: 'a'},
@@ -17,10 +18,9 @@ var argv = minimist(process.argv.slice(2), {
 var arch = argv.arch || os.arch()
 var platform = argv.platform || os.platform()
 var cwd = argv._[0] || '.'
+var env = xtend(process.env, {ARCH: arch, PREBUILD_ARCH: arch})
 var builds = path.join(cwd, 'prebuilds', platform + '-' + arch)
 var output = path.join(cwd, 'build', argv.debug ? 'Debug' : 'Release')
-
-process.env.ARCH = process.env.PREBUILD_ARCH = arch
 
 var targets = [].concat(argv.target || []).map(function (v) {
   if (v.indexOf('@') === -1) v = 'node@' + v
@@ -103,7 +103,7 @@ function copySharedLibs (builds, folder, cb) {
 function run (cmd, cb) {
   if (!cmd) return cb()
 
-  var child = execspawn(cmd, {cwd: cwd, stdio: 'inherit'})
+  var child = execspawn(cmd, {cwd: cwd, env: env, stdio: 'inherit'})
   child.on('exit', function (code) {
     if (code) return cb(spawnError(cmd, code))
     cb()
