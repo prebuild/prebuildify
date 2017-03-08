@@ -37,7 +37,7 @@ if (argv.all) {
 }
 
 if (!targets.length) {
-  console.error('You must specify at least one target using --target=version@runtime')
+  console.error('You must specify at least one target using --target=runtime@version')
   process.exit(1)
 }
 
