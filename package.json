@@ -14,8 +14,12 @@
     "standard": "*"
   },
   "bin": {
-    "prebuildify": "./index.js"
+    "prebuildify": "./bin.js"
   },
+  "files": [
+    "bin.js",
+    "index.js"
+  ],
   "scripts": {
     "test": "standard"
   },
