@@ -21,10 +21,6 @@ function prebuildify (opts, cb) {
     return cb(new Error('You must specify at least one target using --target=runtime@version'))
   }
 
-  if (!fs.existsSync(path.join(opts.cwd, 'package.json'))) {
-    return cb(new Error('No package.json found'))
-  }
-
   opts = xtend(opts, {
     targets: opts.targets.slice(),
     env: xtend(process.env, {ARCH: opts.arch, PREBUILD_ARCH: opts.arch}),
