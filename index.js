@@ -1,83 +1,74 @@
-#!/usr/bin/env node
-
 var proc = require('child_process')
 var execspawn = require('execspawn')
 var os = require('os')
 var path = require('path')
 var fs = require('fs')
-var minimist = require('minimist')
 var abi = require('node-abi')
 var mkdirp = require('mkdirp')
 var xtend = require('xtend/immutable')
 
-var argv = minimist(process.argv.slice(2), {
-  alias: {target: 't', version: 'v', all: 'a'},
-  boolean: ['quiet', 'strip']
-})
+module.exports = prebuildify
 
-var arch = argv.arch || os.arch()
-var platform = argv.platform || os.platform()
-var cwd = argv._[0] || '.'
-var env = xtend(process.env, {ARCH: arch, PREBUILD_ARCH: arch})
-var builds = path.join(cwd, 'prebuilds', platform + '-' + arch)
-var output = path.join(cwd, 'build', argv.debug ? 'Debug' : 'Release')
+function prebuildify (opts, cb) {
+  opts = xtend({
+    arch: os.arch(),
+    platform: os.platform(),
+    cwd: '.',
+    targets: []
+  }, opts)
 
-var targets = [].concat(argv.target || []).map(function (v) {
-  if (v.indexOf('@') === -1) v = 'node@' + v
-
-  return {
-    runtime: v.split('@')[0],
-    target: v.split('@')[1].replace(/^v/, '')
+  if (!opts.targets.length) {
+    return cb(new Error('You must specify at least one target using --target=runtime@version'))
   }
-})
 
-// TODO: also support --lts and get versions from travis
-if (argv.all) {
-  targets = abi.supportedTargets.slice(0)
+  if (!fs.existsSync(path.join(opts.cwd, 'package.json'))) {
+    return cb(new Error('No package.json found'))
+  }
+
+  opts = xtend(opts, {
+    targets: opts.targets.slice(),
+    env: xtend(process.env, {ARCH: opts.arch, PREBUILD_ARCH: opts.arch}),
+    builds: path.join(opts.cwd, 'prebuilds', opts.platform + '-' + opts.arch),
+    output: path.join(opts.cwd, 'build', opts.debug ? 'Debug' : 'Release')
+  })
+
+  mkdirp(opts.builds, function (err) {
+    if (err) return cb(err)
+    loop(opts, cb)
+  })
 }
 
-if (!targets.length) {
-  console.error('You must specify at least one target using --target=runtime@version')
-  process.exit(1)
-}
+function loop (opts, cb) {
+  var next = opts.targets.shift()
+  if (!next) return cb()
 
-if (!fs.existsSync(path.join(cwd, 'package.json'))) {
-  console.error('No package.json found')
-  process.exit(1)
-}
+  run(opts.preinstall, opts.cmd, opts.env, function (err) {
+    if (err) return cb(err)
 
-mkdirp.sync(builds)
-loop(null)
+    build(next.target, next.runtime, opts, function (err, filename) {
+      if (err) return cb(err)
 
-function loop (err) {
-  if (err) throw err
+      run(opts.postinstall, opts.cmd, opts.env, function (err) {
+        if (err) return cb(err)
 
-  var next = targets.shift()
-  if (!next) return
-
-  run(argv.preinstall, function (err) {
-    if (err) return loop(err)
-
-    build(next.target, next.runtime, function (err, filename) {
-      if (err) return loop(err)
-
-      run(argv.postinstall, function (err) {
-        if (err) return loop(err)
-
-        copySharedLibs(output, builds, function (err) {
-          if (err) return loop(err)
+        copySharedLibs(opts.output, opts.builds, opts, function (err) {
+          if (err) return cb(err)
 
           var name = next.runtime + '-' + abi.getAbi(next.target, next.runtime) + '.node'
-          var dest = path.join(builds, name)
+          var dest = path.join(opts.builds, name)
 
-          fs.rename(filename, dest, loop)
+          fs.rename(filename, dest, function (err) {
+            if (err) return cb(err)
+
+            loop(opts, cb)
+          })
         })
       })
     })
   })
 }
 
-function copySharedLibs (builds, folder, cb) {
+function copySharedLibs (builds, folder, opts, cb) {
   fs.readdir(builds, function (err, files) {
     if (err) return cb()
 
@@ -92,7 +83,7 @@ function copySharedLibs (builds, folder, cb) {
       var next = libs.shift()
       if (!next) return cb()
 
-      strip(path.join(builds, next), function (err) {
+      strip(path.join(builds, next), opts, function (err) {
         if (err) return cb(err)
         copy(path.join(builds, next), path.join(folder, next), loop)
       })
@@ -100,7 +91,7 @@ function copySharedLibs (builds, folder, cb) {
   })
 }
 
-function run (cmd, cb) {
+function run (cmd, cwd, env, cb) {
   if (!cmd) return cb()
 
   var child = execspawn(cmd, {cwd: cwd, env: env, stdio: 'inherit'})
@@ -110,14 +101,14 @@ function run (cmd, cb) {
   })
 }
 
-function build (target, runtime, cb) {
+function build (target, runtime, opts, cb) {
   var args = [
     'rebuild',
     '--target=' + target
   ]
 
-  if (argv.arch) {
-    args.push('--target_arch=' + argv.arch)
+  if (opts.arch) {
+    args.push('--target_arch=' + opts.arch)
   }
 
   if (runtime === 'electron') {
@@ -125,24 +116,24 @@ function build (target, runtime, cb) {
     args.push('--dist-url=https://atom.io/download/electron')
   }
 
-  if (argv.debug) {
+  if (opts.debug) {
     args.push('--debug')
   } else {
     args.push('--release')
   }
 
   var child = proc.spawn(os.platform() === 'win32' ? 'node-gyp.cmd' : 'node-gyp', args, {
-    cwd: cwd,
-    stdio: argv.quiet ? 'ignore' : 'inherit'
+    cwd: opts.cwd,
+    stdio: opts.quiet ? 'ignore' : 'inherit'
   })
 
   child.on('exit', function (code) {
     if (code) return spawnError('node-gyp', code)
 
-    findBuild(output, function (err, output) {
+    findBuild(opts.output, function (err, output) {
       if (err) return cb(err)
 
-      strip(output, function (err) {
+      strip(output, opts, function (err) {
         if (err) return cb(err)
         cb(null, output)
       })
@@ -163,10 +154,10 @@ function findBuild (dir, cb) {
   })
 }
 
-function strip (file, cb) {
-  if (!argv.strip || platform !== 'darwin' && platform !== 'linux') return process.nextTick(cb)
+function strip (file, opts, cb) {
+  if (!opts.strip || (opts.platform !== 'darwin' && opts.platform !== 'linux')) return cb()
 
-  var args = platform === 'darwin' ? [file, '-Sx'] : [file, '--strip-all']
+  var args = opts.platform === 'darwin' ? [file, '-Sx'] : [file, '--strip-all']
   var child = proc.spawn('strip', args, {stdio: 'ignore'})
 
   child.on('exit', function (code) {
