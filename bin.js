@@ -23,17 +23,10 @@ if (argv.all) {
   targets = abi.supportedTargets.slice(0)
 }
 
-prebuildify({
-  arch: argv.arch,
-  platform: argv.platform,
-  cwd: argv._[0],
-  debug: argv.debug,
-  targets: targets,
-  preinstall: argv.preinstall,
-  postinstall: argv.postinstall,
-  strip: argv.strip,
-  quiet: argv.quiet
-}, function (err) {
+argv.targets = targets
+argv.cwd = argv.cwd || argv._[0] || '.'
+
+prebuildify(argv, function (err) {
   if (err) {
     console.error(err.message || err)
     process.exit(1)
