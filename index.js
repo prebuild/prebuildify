@@ -120,6 +120,7 @@ function build (target, runtime, opts, cb) {
 
   var child = proc.spawn(os.platform() === 'win32' ? 'node-gyp.cmd' : 'node-gyp', args, {
     cwd: opts.cwd,
+    env: opts.env,
     stdio: opts.quiet ? 'ignore' : 'inherit'
   })
 
