@@ -28,6 +28,10 @@ function prebuildify (opts, cb) {
     output: path.join(opts.cwd, 'build', opts.debug ? 'Debug' : 'Release')
   })
 
+  if (opts.arch === 'ia32' && opts.platform === 'linux' && opts.arch !== os.arch()) {
+    opts.env.CFLAGS = '-m32'
+  }
+
   mkdirp(opts.builds, function (err) {
     if (err) return cb(err)
     loop(opts, cb)
