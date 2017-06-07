@@ -129,7 +129,7 @@ function build (target, runtime, opts, cb) {
   })
 
   child.on('exit', function (code) {
-    if (code) return spawnError('node-gyp', code)
+    if (code) return cb(spawnError('node-gyp', code))
 
     findBuild(opts.output, function (err, output) {
       if (err) return cb(err)
@@ -162,7 +162,7 @@ function strip (file, opts, cb) {
   var child = proc.spawn('strip', args, {stdio: 'ignore'})
 
   child.on('exit', function (code) {
-    if (code) return spawnError('strip', code)
+    if (code) return cb(spawnError('strip', code))
     cb()
   })
 }
