@@ -94,7 +94,7 @@ function copySharedLibs (builds, folder, opts, cb) {
 function run (cmd, cwd, env, cb) {
   if (!cmd) return cb()
 
-  var shell = os.platform() === 'android' ? 'sh' : '/bin/sh'
+  var shell = os.platform() === 'android' ? 'sh' : undefined
   var child = execspawn(cmd, {cwd: cwd, env: env, stdio: 'inherit', shell: shell})
   child.on('exit', function (code) {
     if (code) return cb(spawnError(cmd, code))
