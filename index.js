@@ -37,7 +37,7 @@ function prebuildify (opts, cb) {
     if (err) return cb(err)
     loop(opts, function (err) {
       if (err) return cb(err)
-      
+
       if (opts.artifacts) return copyRecursive(opts.artifacts, opts.builds, cb)
       return cb()
     })
