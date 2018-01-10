@@ -3,6 +3,7 @@ var execspawn = require('execspawn')
 var os = require('os')
 var path = require('path')
 var fs = require('fs')
+var copyRecursive = require('fs-extra').copy
 var abi = require('node-abi')
 var mkdirp = require('mkdirp')
 var xtend = require('xtend/immutable')
@@ -34,7 +35,12 @@ function prebuildify (opts, cb) {
 
   mkdirp(opts.builds, function (err) {
     if (err) return cb(err)
-    loop(opts, cb)
+    loop(opts, function (err) {
+      if (err) return cb(err)
+      
+      if (opts.artifacts) return copyRecursive(opts.artifacts, opts.builds, cb)
+      return cb()
+    })
   })
 }
 
