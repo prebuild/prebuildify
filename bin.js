@@ -23,6 +23,12 @@ if (argv.all) {
   targets = abi.supportedTargets.slice(0)
 }
 
+// Should be the default once napi is stable
+if (argv.napi) {
+  targets = [abi.supportedTargets.filter(onlyNode).pop()]
+  if (targets[0].target === '9.0.0') targets[0].target = '9.6.1'
+}
+
 argv.targets = targets
 argv.cwd = argv.cwd || argv._[0] || '.'
 
@@ -32,3 +38,7 @@ prebuildify(argv, function (err) {
     process.exit(1)
   }
 })
+
+function onlyNode (t) {
+  return t.runtime === 'node'
+}

@@ -60,7 +60,8 @@ function loop (opts, cb) {
         copySharedLibs(opts.output, opts.builds, opts, function (err) {
           if (err) return cb(err)
 
-          var name = next.runtime + '-' + abi.getAbi(next.target, next.runtime) + '.node'
+          var v = opts.napi ? 'napi' : abi.getAbi(next.target, next.runtime)
+          var name = next.runtime + '-' + v + '.node'
           var dest = path.join(opts.builds, name)
 
           fs.rename(filename, dest, function (err) {

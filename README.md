@@ -19,6 +19,13 @@ prebuildify --all --strip
 ls prebuilds
 ```
 
+If your module is using the new node core N-API, then you can prebuild using the `--napi` flag
+
+``` sh
+# prebuild for n-api
+prebuildify --napi
+```
+
 Then only remaining thing you need to do now is make your module use a prebuild if one exists
 for the platform/runtime you are using.
 
