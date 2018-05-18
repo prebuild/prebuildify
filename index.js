@@ -3,10 +3,11 @@ var execspawn = require('execspawn')
 var os = require('os')
 var path = require('path')
 var fs = require('fs')
-var copyRecursive = require('fs-extra').copy
 var abi = require('node-abi')
 var mkdirp = require('mkdirp')
 var xtend = require('xtend/immutable')
+var tar = require('tar-fs')
+var pump = require('pump')
 
 module.exports = prebuildify
 
@@ -190,4 +191,8 @@ function copy (a, b, cb) {
       })
     })
   })
+}
+
+function copyRecursive (src, dst, cb) {
+  pump(tar.pack(src), tar.extract(dst), cb)
 }
