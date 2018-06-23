@@ -25,7 +25,11 @@ function prebuildify (opts, cb) {
 
   opts = xtend(opts, {
     targets: opts.targets.slice(),
-    env: xtend(process.env, {ARCH: opts.arch, PREBUILD_ARCH: opts.arch}),
+    env: xtend(process.env, {
+      ARCH: opts.arch,
+      PREBUILD_ARCH: opts.arch,
+      PREBUILD_PLATFORM: opts.platform
+    }),
     builds: path.join(opts.cwd, 'prebuilds', opts.platform + '-' + opts.arch),
     output: path.join(opts.cwd, 'build', opts.debug ? 'Debug' : 'Release')
   })
