@@ -135,7 +135,9 @@ function build (target, runtime, opts, cb) {
     args.push('--release')
   }
 
-  var child = proc.spawn(os.platform() === 'win32' ? 'node-gyp.cmd' : 'node-gyp', args, {
+  var nodeGypBin = os.platform() === 'win32' ? 'node-gyp.cmd' : 'node-gyp'
+  if (process.env.PREBUILD_NODE_GYP) nodeGypBin = process.env.PREBUILD_NODE_GYP
+  var child = proc.spawn(nodeGypBin, args, {
     cwd: opts.cwd,
     env: opts.env,
     stdio: opts.quiet ? 'ignore' : 'inherit'
