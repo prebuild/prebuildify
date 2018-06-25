@@ -25,7 +25,11 @@ function prebuildify (opts, cb) {
 
   opts = xtend(opts, {
     targets: opts.targets.slice(),
-    env: xtend(process.env, {ARCH: opts.arch, PREBUILD_ARCH: opts.arch}),
+    env: xtend(process.env, {
+      ARCH: opts.arch,
+      PREBUILD_ARCH: opts.arch,
+      PREBUILD_PLATFORM: opts.platform
+    }),
     builds: path.join(opts.cwd, 'prebuilds', opts.platform + '-' + opts.arch),
     output: path.join(opts.cwd, 'build', opts.debug ? 'Debug' : 'Release')
   })
@@ -131,7 +135,9 @@ function build (target, runtime, opts, cb) {
     args.push('--release')
   }
 
-  var child = proc.spawn(os.platform() === 'win32' ? 'node-gyp.cmd' : 'node-gyp', args, {
+  var nodeGypBin = os.platform() === 'win32' ? 'node-gyp.cmd' : 'node-gyp'
+  if (process.env.PREBUILD_NODE_GYP) nodeGypBin = process.env.PREBUILD_NODE_GYP
+  var child = proc.spawn(nodeGypBin, args, {
     cwd: opts.cwd,
     env: opts.env,
     stdio: opts.quiet ? 'ignore' : 'inherit'
