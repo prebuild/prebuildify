@@ -5,7 +5,7 @@ var abi = require('node-abi')
 var prebuildify = require('./index')
 
 var argv = minimist(process.argv.slice(2), {
-  alias: {target: 't', version: 'v', all: 'a'},
+  alias: {target: 't', version: 'v', all: 'a', napi: 'n-api'},
   boolean: ['quiet', 'strip']
 })
 
