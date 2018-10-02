@@ -8,6 +8,9 @@ var mkdirp = require('mkdirp')
 var xtend = require('xtend/immutable')
 var tar = require('tar-fs')
 var pump = require('pump')
+var detectLibc = require('detect-libc')
+
+var libc = process.env.LIBC || (detectLibc.isNonGlibcLinux && detectLibc.family) || ''
 
 module.exports = prebuildify
 
@@ -15,6 +18,7 @@ function prebuildify (opts, cb) {
   opts = xtend({
     arch: process.env.ARCH || os.arch(),
     platform: os.platform(),
+    libc: libc,
     cwd: '.',
     targets: []
   }, opts)
@@ -28,9 +32,10 @@ function prebuildify (opts, cb) {
     env: xtend(process.env, {
       ARCH: opts.arch,
       PREBUILD_ARCH: opts.arch,
-      PREBUILD_PLATFORM: opts.platform
+      PREBUILD_PLATFORM: opts.platform,
+      LIBC: opts.libc
     }),
-    builds: path.join(opts.cwd, 'prebuilds', opts.platform + '-' + opts.arch),
+    builds: path.join(opts.cwd, 'prebuilds', opts.platform + opts.libc + '-' + opts.arch),
     output: path.join(opts.cwd, 'build', opts.debug ? 'Debug' : 'Release')
   })
 

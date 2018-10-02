@@ -4,6 +4,7 @@
   "description": "Create and package prebuilds for native modules",
   "main": "index.js",
   "dependencies": {
+    "detect-libc": "^1.0.3",
     "execspawn": "^1.0.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
