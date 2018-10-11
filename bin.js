@@ -47,6 +47,6 @@ function onlyNode (t) {
   return t.runtime === 'node'
 }
 
-function onlyNode (t) {
+function onlyElectron (t) {
   return t.runtime === 'electron'
 }
