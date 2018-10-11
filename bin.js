@@ -25,7 +25,11 @@ if (argv.all) {
 
 // Should be the default once napi is stable
 if (argv.napi) {
-  targets = [abi.supportedTargets.filter(onlyNode).pop()]
+  targets = [
+    abi.supportedTargets.filter(onlyNode).pop(),
+    abi.supportedTargets.filter(onlyElectron).pop(),
+  ]
+
   if (targets[0].target === '9.0.0') targets[0].target = '9.6.1'
 }
 
@@ -41,4 +45,8 @@ prebuildify(argv, function (err) {
 
 function onlyNode (t) {
   return t.runtime === 'node'
+}
+
+function onlyNode (t) {
+  return t.runtime === 'electron'
 }
