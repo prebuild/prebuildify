@@ -24,7 +24,7 @@ if (argv.all) {
 }
 
 // Should be the default once napi is stable
-if (argv.napi && !targets) {
+if (argv.napi && targets.length === 0) {
   targets = [
     abi.supportedTargets.filter(onlyNode).pop(),
     abi.supportedTargets.filter(onlyElectron).pop(),
