@@ -11,7 +11,7 @@ npm install -g prebuildify
 First go to your native module and make a bunch of prebuilds
 
 ``` sh
-# got to your native module
+# go to your native module
 cd your-native-module
 # build for all electron/node binary versions and strip out symbols
 prebuildify --all --strip
