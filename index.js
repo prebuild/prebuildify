@@ -14,7 +14,7 @@ module.exports = prebuildify
 function prebuildify (opts, cb) {
   opts = xtend({
     arch: process.env.ARCH || os.arch(),
-    platform: os.platform(),
+    platform: process.env.PLATFORM || os.platform(),
     cwd: '.',
     targets: []
   }, opts)
@@ -53,13 +53,13 @@ function loop (opts, cb) {
   var next = opts.targets.shift()
   if (!next) return cb()
 
-  run(opts.preinstall, opts.cmd, opts.env, function (err) {
+  run(opts.preinstall, opts, function (err) {
     if (err) return cb(err)
 
     build(next.target, next.runtime, opts, function (err, filename) {
       if (err) return cb(err)
 
-      run(opts.postinstall, opts.cmd, opts.env, function (err) {
+      run(opts.postinstall, opts, function (err) {
         if (err) return cb(err)
 
         copySharedLibs(opts.output, opts.builds, opts, function (err) {
@@ -103,11 +103,11 @@ function copySharedLibs (builds, folder, opts, cb) {
   })
 }
 
-function run (cmd, cwd, env, cb) {
+function run (cmd, opts, cb) {
   if (!cmd) return cb()
 
-  var shell = os.platform() === 'android' ? 'sh' : undefined
-  var child = execspawn(cmd, {cwd: cwd, env: env, stdio: 'inherit', shell: shell})
+  var shell = opts.platform === 'android' ? 'sh' : undefined
+  var child = execspawn(cmd, {cwd: opts.cwd, env: opts.env, stdio: 'inherit', shell: shell})
   child.on('exit', function (code) {
     if (code) return cb(spawnError(cmd, code))
     cb()
@@ -135,7 +135,7 @@ function build (target, runtime, opts, cb) {
     args.push('--release')
   }
 
-  var nodeGypBin = os.platform() === 'win32' ? 'node-gyp.cmd' : 'node-gyp'
+  var nodeGypBin = opts.platform === 'win32' ? 'node-gyp.cmd' : 'node-gyp'
   if (process.env.PREBUILD_NODE_GYP) nodeGypBin = process.env.PREBUILD_NODE_GYP
   var child = proc.spawn(nodeGypBin, args, {
     cwd: opts.cwd,
