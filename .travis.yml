@@ -9,3 +9,6 @@ node_js:
   - 6
   - 8
   - 10
+
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then npm i --global --production windows-build-tools; fi
