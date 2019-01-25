@@ -171,10 +171,11 @@ function findBuild (dir, cb) {
 }
 
 function strip (file, opts, cb) {
-  if (!opts.strip || (opts.platform !== 'darwin' && opts.platform !== 'linux')) return cb()
+  var platform = os.platform()
+  if (!opts.strip || (platform !== 'darwin' && platform !== 'linux')) return cb()
 
-  var args = opts.platform === 'darwin' ? [file, '-Sx'] : [file, '--strip-all']
   var stripBin = process.env.STRIP || 'strip'
+  var args = platform === 'darwin' ? [file, '-Sx'] : [file, '--strip-all']
   var child = proc.spawn(stripBin, args, {stdio: 'ignore'})
 
   child.on('exit', function (code) {
