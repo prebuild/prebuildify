@@ -31,12 +31,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mafintosh/prebuildify.git"
+    "url": "https://github.com/prebuild/prebuildify.git"
   },
   "author": "Mathias Buus (@mafintosh)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mafintosh/prebuildify/issues"
+    "url": "https://github.com/prebuild/prebuildify/issues"
   },
-  "homepage": "https://github.com/mafintosh/prebuildify"
+  "homepage": "https://github.com/prebuild/prebuildify"
 }

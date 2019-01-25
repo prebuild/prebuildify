@@ -31,7 +31,7 @@ prebuildify --napi
 Then only remaining thing you need to do now is make your module use a prebuild if one exists
 for the platform/runtime you are using.
 
-Use [node-gyp-build](https://github.com/mafintosh/node-gyp-build) to do this.
+Use [node-gyp-build](https://github.com/prebuild/node-gyp-build) to do this.
 
 ``` sh
 # first install node-gyp-build
