@@ -27,7 +27,7 @@ if (argv.all) {
 if (argv.napi && targets.length === 0) {
   targets = [
     abi.supportedTargets.filter(onlyNode).pop(),
-    abi.supportedTargets.filter(onlyElectron).pop(),
+    abi.supportedTargets.filter(onlyElectron).pop()
   ]
 
   if (targets[0].target === '9.0.0') targets[0].target = '9.6.1'

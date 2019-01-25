@@ -1,10 +1,12 @@
 # prebuildify
 
-Create and package prebuilds for native modules
+> Create and package prebuilds for native modules
 
 ```
 npm install -g prebuildify
 ```
+
+[![Build Status](https://travis-ci.org/prebuild/prebuildify.svg?branch=master)](https://travis-ci.org/prebuild/prebuildify)
 
 ## Usage
 
