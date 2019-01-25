@@ -14,7 +14,7 @@ module.exports = prebuildify
 function prebuildify (opts, cb) {
   opts = xtend({
     arch: process.env.ARCH || os.arch(),
-    platform: process.env.TARGET_PLATFORM || os.platform(),
+    targetPlatform: process.env.TARGET_PLATFORM || os.platform(),
     cwd: '.',
     targets: []
   }, opts)
@@ -28,13 +28,13 @@ function prebuildify (opts, cb) {
     env: xtend(process.env, {
       ARCH: opts.arch,
       PREBUILD_ARCH: opts.arch,
-      PREBUILD_PLATFORM: opts.platform
+      PREBUILD_PLATFORM: opts.targetPlatform
     }),
-    builds: path.join(opts.cwd, 'prebuilds', opts.platform + '-' + opts.arch),
+    builds: path.join(opts.cwd, 'prebuilds', opts.targetPlatform + '-' + opts.arch),
     output: path.join(opts.cwd, 'build', opts.debug ? 'Debug' : 'Release')
   })
 
-  if (opts.arch === 'ia32' && opts.platform === 'linux' && opts.arch !== os.arch()) {
+  if (opts.arch === 'ia32' && opts.targetPlatform === 'linux' && opts.arch !== os.arch()) {
     opts.env.CFLAGS = '-m32'
   }
 
