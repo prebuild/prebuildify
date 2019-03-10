@@ -23,12 +23,14 @@ function prebuildify (opts, cb) {
     targets: []
   }, opts)
 
-  if (!opts.targets.length) {
-    return cb(new Error('You must specify at least one target using --target=runtime@version'))
+  var targets = resolveTargets(opts.targets, opts.all, opts.napi)
+
+  if (!targets.length) {
+    return process.nextTick(cb, new Error('You must specify at least one target'))
   }
 
   opts = xtend(opts, {
-    targets: opts.targets.slice(),
+    targets: targets,
     env: xtend(process.env, {
       PREBUILD_ARCH: opts.arch,
       PREBUILD_PLATFORM: opts.platform,
@@ -220,4 +222,41 @@ function npmbin (name) {
 
 function shell () {
   return os.platform() === 'android' ? 'sh' : undefined
+}
+
+function resolveTargets (targets, all, napi) {
+  targets = targets.map(function (v) {
+    if (typeof v === 'object' && v !== null) return v
+    if (v.indexOf('@') === -1) v = 'node@' + v
+
+    return {
+      runtime: v.split('@')[0],
+      target: v.split('@')[1].replace(/^v/, '')
+    }
+  })
+
+  // TODO: also support --lts and get versions from travis
+  if (all) {
+    targets = abi.supportedTargets.slice(0)
+  }
+
+  // Should be the default once napi is stable
+  if (napi && targets.length === 0) {
+    targets = [
+      abi.supportedTargets.filter(onlyNode).pop(),
+      abi.supportedTargets.filter(onlyElectron).pop()
+    ]
+
+    if (targets[0].target === '9.0.0') targets[0].target = '9.6.1'
+  }
+
+  return targets
+}
+
+function onlyNode (t) {
+  return t.runtime === 'node'
+}
+
+function onlyElectron (t) {
+  return t.runtime === 'electron'
 }
