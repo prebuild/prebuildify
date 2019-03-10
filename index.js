@@ -13,8 +13,12 @@ module.exports = prebuildify
 
 function prebuildify (opts, cb) {
   opts = xtend({
-    arch: process.env.ARCH || os.arch(),
-    platform: os.platform(),
+    arch: process.env.PREBUILD_ARCH || os.arch(),
+    platform: process.env.PREBUILD_PLATFORM || os.platform(),
+    strip: process.env.PREBUILD_STRIP === '1',
+    stripBin: process.env.PREBUILD_STRIP_BIN || 'strip',
+    nodeGyp: process.env.PREBUILD_NODE_GYP || npmbin('node-gyp'),
+    shell: process.env.PREBUILD_SHELL || shell(),
     cwd: '.',
     targets: []
   }, opts)
@@ -26,9 +30,12 @@ function prebuildify (opts, cb) {
   opts = xtend(opts, {
     targets: opts.targets.slice(),
     env: xtend(process.env, {
-      ARCH: opts.arch,
       PREBUILD_ARCH: opts.arch,
-      PREBUILD_PLATFORM: opts.platform
+      PREBUILD_PLATFORM: opts.platform,
+      PREBUILD_STRIP: opts.strip ? '1' : '0',
+      PREBUILD_STRIP_BIN: opts.stripBin,
+      PREBUILD_NODE_GYP: opts.nodeGyp,
+      PREBUILD_SHELL: opts.shell
     }),
     builds: path.join(opts.cwd, 'prebuilds', opts.platform + '-' + opts.arch),
     output: path.join(opts.cwd, 'build', opts.debug ? 'Debug' : 'Release')
@@ -53,13 +60,13 @@ function loop (opts, cb) {
   var next = opts.targets.shift()
   if (!next) return cb()
 
-  run(opts.preinstall, opts.cmd, opts.env, function (err) {
+  run(opts.preinstall, opts, function (err) {
     if (err) return cb(err)
 
     build(next.target, next.runtime, opts, function (err, filename) {
       if (err) return cb(err)
 
-      run(opts.postinstall, opts.cmd, opts.env, function (err) {
+      run(opts.postinstall, opts, function (err) {
         if (err) return cb(err)
 
         copySharedLibs(opts.output, opts.builds, opts, function (err) {
@@ -103,11 +110,16 @@ function copySharedLibs (builds, folder, opts, cb) {
   })
 }
 
-function run (cmd, cwd, env, cb) {
+function run (cmd, opts, cb) {
   if (!cmd) return cb()
 
-  var shell = os.platform() === 'android' ? 'sh' : undefined
-  var child = execspawn(cmd, {cwd: cwd, env: env, stdio: 'inherit', shell: shell})
+  var child = execspawn(cmd, {
+    cwd: opts.cwd,
+    env: opts.env,
+    stdio: 'inherit',
+    shell: opts.shell
+  })
+
   child.on('exit', function (code) {
     if (code) return cb(spawnError(cmd, code))
     cb()
@@ -135,9 +147,7 @@ function build (target, runtime, opts, cb) {
     args.push('--release')
   }
 
-  var nodeGypBin = os.platform() === 'win32' ? 'node-gyp.cmd' : 'node-gyp'
-  if (process.env.PREBUILD_NODE_GYP) nodeGypBin = process.env.PREBUILD_NODE_GYP
-  var child = proc.spawn(nodeGypBin, args, {
+  var child = proc.spawn(opts.nodeGyp, args, {
     cwd: opts.cwd,
     env: opts.env,
     stdio: opts.quiet ? 'ignore' : 'inherit'
@@ -174,12 +184,11 @@ function strip (file, opts, cb) {
   var platform = os.platform()
   if (!opts.strip || (platform !== 'darwin' && platform !== 'linux')) return cb()
 
-  var stripBin = process.env.STRIP || 'strip'
   var args = platform === 'darwin' ? [file, '-Sx'] : [file, '--strip-all']
-  var child = proc.spawn(stripBin, args, {stdio: 'ignore'})
+  var child = proc.spawn(opts.stripBin, args, {stdio: 'ignore'})
 
   child.on('exit', function (code) {
-    if (code) return cb(spawnError('strip', code))
+    if (code) return cb(spawnError(opts.stripBin, code))
     cb()
   })
 }
@@ -203,4 +212,12 @@ function copy (a, b, cb) {
 
 function copyRecursive (src, dst, cb) {
   pump(tar.pack(src), tar.extract(dst), cb)
+}
+
+function npmbin (name) {
+  return os.platform() === 'win32' ? name + '.cmd' : name
+}
+
+function shell () {
+  return os.platform() === 'android' ? 'sh' : undefined
 }
