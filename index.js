@@ -15,6 +15,7 @@ function prebuildify (opts, cb) {
   opts = xtend({
     arch: process.env.PREBUILD_ARCH || os.arch(),
     platform: process.env.PREBUILD_PLATFORM || os.platform(),
+    uv: process.env.PREBUILD_UV || uv(),
     strip: process.env.PREBUILD_STRIP === '1',
     stripBin: process.env.PREBUILD_STRIP_BIN || 'strip',
     nodeGyp: process.env.PREBUILD_NODE_GYP || npmbin('node-gyp'),
@@ -22,6 +23,14 @@ function prebuildify (opts, cb) {
     cwd: '.',
     targets: []
   }, opts)
+
+  if (!opts.armv) {
+    opts.armv = process.env.PREBUILD_ARMV || armv(opts)
+  }
+
+  if (!opts.libc) {
+    opts.libc = process.env.PREBUILD_LIBC || (isAlpine(opts) ? 'musl' : 'glibc')
+  }
 
   var targets = resolveTargets(opts.targets, opts.all, opts.napi)
 
@@ -34,6 +43,9 @@ function prebuildify (opts, cb) {
     env: xtend(process.env, {
       PREBUILD_ARCH: opts.arch,
       PREBUILD_PLATFORM: opts.platform,
+      PREBUILD_UV: opts.uv,
+      PREBUILD_ARMV: opts.armv,
+      PREBUILD_LIBC: opts.libc,
       PREBUILD_STRIP: opts.strip ? '1' : '0',
       PREBUILD_STRIP_BIN: opts.stripBin,
       PREBUILD_NODE_GYP: opts.nodeGyp,
@@ -74,8 +86,7 @@ function loop (opts, cb) {
         copySharedLibs(opts.output, opts.builds, opts, function (err) {
           if (err) return cb(err)
 
-          var v = opts.napi ? 'napi' : abi.getAbi(next.target, next.runtime)
-          var name = next.runtime + '-' + v + '.node'
+          var name = prebuildName(next, opts)
           var dest = path.join(opts.builds, name)
 
           fs.rename(filename, dest, function (err) {
@@ -87,6 +98,33 @@ function loop (opts, cb) {
       })
     })
   })
+}
+
+function prebuildName (target, opts) {
+  var tags = [target.runtime]
+
+  if (opts.napi) {
+    tags.push('napi')
+  } else {
+    tags.push('abi' + abi.getAbi(target.target, target.runtime))
+  }
+
+  if (opts.tagUv) {
+    var uv = opts.tagUv === true ? opts.uv : opts.tagUv
+    if (uv) tags.push('uv' + uv)
+  }
+
+  if (opts.tagArmv) {
+    var armv = opts.tagArmv === true ? opts.armv : opts.tagArmv
+    if (armv) tags.push('armv' + armv)
+  }
+
+  if (opts.tagLibc) {
+    var libc = opts.tagLibc === true ? opts.libc : opts.tagLibc
+    if (libc) tags.push(libc)
+  }
+
+  return tags.join('.') + '.node'
 }
 
 function copySharedLibs (builds, folder, opts, cb) {
@@ -259,4 +297,27 @@ function onlyNode (t) {
 
 function onlyElectron (t) {
   return t.runtime === 'electron'
+}
+
+function uv () {
+  return (process.versions.uv || '').split('.')[0]
+}
+
+function armv (opts) {
+  var host = os.arch()
+  var target = opts.arch
+
+  // Can't detect armv in cross-compiling scenarios.
+  if (host !== target) return ''
+
+  return (host === 'arm64' ? '8' : process.config.variables.arm_version) || ''
+}
+
+function isAlpine (opts) {
+  var host = os.platform()
+  var target = opts.platform
+
+  if (host !== target) return false
+
+  return host === 'linux' && fs.existsSync('/etc/alpine-release')
 }

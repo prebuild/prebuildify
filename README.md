@@ -10,6 +10,8 @@ npm install -g prebuildify
 
 ## Usage
 
+> **Note.** Options, environment variables and prebuild names have changed in `prebuildify@3`. Please see the documentation below. You will also need to upgrade `node-gyp-build`.
+
 First go to your native module and make a bunch of prebuilds.
 
 ``` sh
@@ -81,13 +83,19 @@ Options can be provided via (in order of precedence) the programmatic API, the C
 | `--debug`       | -                    | `false`                        | Make Debug build(s)
 | `--arch`        | `PREBUILD_ARCH`      | [`os.arch()`]([os-arch])       | Target architecture\*\*
 | `--platform`    | `PREBUILD_PLATFORM`  | [`os.platform()`][os-platform] | Target platform\*\*
+| `--uv`          | `PREBUILD_UV`        | From `process.versions.uv`     | Major libuv version\*\*\*
+| `--armv`        | `PREBUILD_ARMV`      | Auto-detected on ARM machines  | Numeric ARM version (e.g. 7)\*\*\*
+| `--libc`        | `PREBUILD_LIBC`      | `glibc`, `musl` on Alpine      | libc flavor\*\*\*
+| `--tag-uv`      | -                    | `false`                        | Tag prebuild with `uv`\*\*\*
+| `--tag-armv`    | -                    | `false`                        | Tag prebuild with `armv`\*\*\*
+| `--tag-libc`    | -                    | `false`                        | Tag prebuild with `libc`\*\*\*
 | `--preinstall`  | -                    | -                              | Command to run before build
 | `--postinstall` | -                    | -                              | Command to run after build
 | `--shell`       | `PREBUILD_SHELL`     | `'sh'` on Android              | Shell to spawn commands in
 | `--artifacts`   | -                    | -                              | Directory containing additional files.<br>Recursively copied into prebuild directory.
 | `--strip`       | `PREBUILD_STRIP`     | `false`                        | Enable [stripping][strip]
 | `--strip-bin`   | `PREBUILD_STRIP_BIN` | `'strip'`                      | Custom strip binary
-| `--node-gyp`    | `PREBUILD_NODE_GYP`  | `'node-gyp(.cmd)'`             | Custom `node-gyp` binary\*\*\*
+| `--node-gyp`    | `PREBUILD_NODE_GYP`  | `'node-gyp(.cmd)'`             | Custom `node-gyp` binary\*\*\*\*
 | `--quiet`       | -                    | `false`                        | Suppress `node-gyp` output
 | `--cwd`         | -                    | `process.cwd()`                | Working directory
 
@@ -95,7 +103,9 @@ Options can be provided via (in order of precedence) the programmatic API, the C
 
 \*\* The `arch` option is passed to [`node-gyp`][node-gyp] as `--target-arch`. Target architecture and platform (what you're building _for_) default to the host platform and architecture (what you're building _on_). They can be overridden for cross-compilation, in which case you'll likely also want to override the strip binary. The platform and architecture dictate the output folder. For example on Linux x64 prebuilds end up in `prebuilds/linux-x64`.
 
-\*\*\* To enable the use of forks like [`nodejs-mobile-gyp`](https://www.npmjs.com/package/nodejs-mobile-gyp).
+\*\*\* The filenames of prebuilds are composed of _tags_ which by default include runtime and either `napi` or `abi<version>`. For example: `electron.abi40.node`. To make more specific prebuilds (for `node-gyp-build` to select) you can add additional tags. Values for these tags are auto-detected. For example, `--napi --tag-uv --tag-armv` could result in a build called `node.napi.uv1.armv8.node` if the host machine has an ARM architecture. When cross-compiling you can override values either through the relevant option (`--tag-armv --armv 7`) or the tag (`--tag-armv 7`) as a shortcut. They're separate because you may want to build a certain version without tagging the prebuild as such, assuming that the prebuild is forward compatible.
+
+\*\*\*\* To enable the use of forks like [`nodejs-mobile-gyp`](https://www.npmjs.com/package/nodejs-mobile-gyp).
 
 ## License
 

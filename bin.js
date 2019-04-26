@@ -10,7 +10,10 @@ var argv = minimist(process.argv.slice(2), {
     all: 'a',
     napi: 'n-api',
     stripBin: 'strip-bin',
-    nodeGyp: 'node-gyp'
+    nodeGyp: 'node-gyp',
+    tagUv: 'tag-uv',
+    tagArmv: 'tag-armv',
+    tagLibc: 'tag-libc'
   },
   boolean: ['quiet', 'strip', 'napi', 'debug', 'all']
 })
