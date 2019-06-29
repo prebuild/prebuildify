@@ -8,6 +8,7 @@ var mkdirp = require('mkdirp')
 var xtend = require('xtend/immutable')
 var tar = require('tar-fs')
 var pump = require('pump')
+var npmRunPath = require('npm-run-path')
 
 module.exports = prebuildify
 
@@ -58,6 +59,10 @@ function prebuildify (opts, cb) {
   if (opts.arch === 'ia32' && opts.platform === 'linux' && opts.arch !== os.arch()) {
     opts.env.CFLAGS = '-m32'
   }
+
+  // Since npm@5.6.0 npm adds its bundled node-gyp to PATH, taking precedence
+  // over the local .bin folder. Counter that by (again) adding .bin to PATH.
+  opts.env = npmRunPath.env({ env: opts.env, cwd: opts.cwd })
 
   mkdirp(opts.builds, function (err) {
     if (err) return cb(err)

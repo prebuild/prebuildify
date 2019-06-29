@@ -1,3 +1,4 @@
 node_modules
-test/package/build
-test/package/prebuilds
+test/*/build
+test/*/prebuilds
+!test/mock-gyp/node_modules

@@ -43,3 +43,13 @@ test('uv, armv and libc tags', function (t) {
     t.end()
   })
 })
+
+test('prefers locally installed node-gyp bin', function (t) {
+  prebuildify({
+    cwd: path.join(__dirname, 'mock-gyp'),
+    targets: [{runtime: 'node', target: process.version}]
+  }, function (err) {
+    t.is(err.message, 'node-gyp exited with 123')
+    t.end()
+  })
+})
