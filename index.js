@@ -230,7 +230,7 @@ function strip (file, opts, cb) {
   if (!opts.strip || (platform !== 'darwin' && platform !== 'linux')) return cb()
 
   var args = platform === 'darwin' ? [file, '-Sx'] : [file, '--strip-all']
-  var child = proc.spawn(opts.stripBin, args, {stdio: 'ignore'})
+  var child = proc.spawn(opts.stripBin, args, { stdio: 'ignore' })
 
   child.on('exit', function (code) {
     if (code) return cb(spawnError(opts.stripBin, code))
