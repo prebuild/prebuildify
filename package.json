@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "nan": "^2.5.1",
-    "standard": "^9.0.1",
+    "standard": "^13.0.1",
     "tape": "^4.6.3"
   },
   "bin": {
