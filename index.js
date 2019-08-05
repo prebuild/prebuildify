@@ -177,6 +177,11 @@ function build (target, runtime, opts, cb) {
     '--target=' + target
   ]
 
+  // Since electron and node are reusing the versions now (fx 6.0.0) and
+  // node-gyp only uses the version to store the dev files, they have started
+  // clashing. To work around this we explicitly set devdir to tmpdir/runtime(/target)
+  args.push('--devdir=' + path.join(opts.cache || os.tmpdir(), runtime))
+
   if (opts.arch) {
     args.push('--target_arch=' + opts.arch)
   }

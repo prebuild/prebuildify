@@ -13,7 +13,8 @@ var argv = minimist(process.argv.slice(2), {
     nodeGyp: 'node-gyp',
     tagUv: 'tag-uv',
     tagArmv: 'tag-armv',
-    tagLibc: 'tag-libc'
+    tagLibc: 'tag-libc',
+    cache: 'c'
   },
   boolean: ['quiet', 'strip', 'napi', 'debug', 'all']
 })
