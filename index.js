@@ -180,7 +180,8 @@ function build (target, runtime, opts, cb) {
   // Since electron and node are reusing the versions now (fx 6.0.0) and
   // node-gyp only uses the version to store the dev files, they have started
   // clashing. To work around this we explicitly set devdir to tmpdir/runtime(/target)
-  args.push('--devdir=' + path.join(opts.cache || path.join(os.tmpdir(), 'prebuildify'), runtime))
+  const cache = opts.cache || path.join(os.tmpdir(), 'prebuildify')
+  args.push('--devdir=' + path.join(cache, runtime))
 
   if (opts.arch) {
     args.push('--target_arch=' + opts.arch)
@@ -197,21 +198,23 @@ function build (target, runtime, opts, cb) {
     args.push('--release')
   }
 
-  var child = proc.spawn(opts.nodeGyp, args, {
-    cwd: opts.cwd,
-    env: opts.env,
-    stdio: opts.quiet ? 'ignore' : 'inherit'
-  })
+  mkdirp(cache, function () {
+    var child = proc.spawn(opts.nodeGyp, args, {
+      cwd: opts.cwd,
+      env: opts.env,
+      stdio: opts.quiet ? 'ignore' : 'inherit'
+    })
 
-  child.on('exit', function (code) {
-    if (code) return cb(spawnError('node-gyp', code))
+    child.on('exit', function (code) {
+      if (code) return cb(spawnError('node-gyp', code))
 
-    findBuild(opts.output, function (err, output) {
-      if (err) return cb(err)
-
-      strip(output, opts, function (err) {
+      findBuild(opts.output, function (err, output) {
         if (err) return cb(err)
-        cb(null, output)
+
+        strip(output, opts, function (err) {
+          if (err) return cb(err)
+          cb(null, output)
+        })
       })
     })
   })
