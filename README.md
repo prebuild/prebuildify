@@ -6,7 +6,7 @@
 npm install -g prebuildify
 ```
 
-With prebuildify, all native prebuilt artifacts are shipped with the module that is packed and published to npm, which skips over any kind of required download steps like you find in [prebuild](https://github.com/prebuild/prebuild).  The irony of this approach is that it is faster to download all prebuilt artifacts for every platform when they are packed with the module bundle than it is to download the individual platform native artifacts as an install script. 
+With `prebuildify`, all prebuilt binaries are shipped inside the package that is published to npm, which means there's no need for a separate download step like you find in [`prebuild`](https://github.com/prebuild/prebuild). The irony of this approach is that it is faster to download all prebuilt binaries for every platform when they are bundled than it is to download a single prebuilt binary as an install script. 
 
 > Always use prebuildify --[@mafintosh](https://mafinto.sh)
 
