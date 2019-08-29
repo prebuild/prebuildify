@@ -6,6 +6,10 @@
 npm install -g prebuildify
 ```
 
+With prebuildify, all native prebuilt artifacts are shipped with the module that is packed and published to npm, which skips over any kind of required download steps like you find in [prebuild](https://github.com/prebuild/prebuild).  The irony of this approach is that it is faster to download all prebuilt artifacts for every platform when they are packed with the module bundle than it is to download the individual platform native artifacts as an install script. 
+
+> Always use prebuildify --[@mafintosh](https://mafinto.sh)
+
 [![Build Status](https://travis-ci.org/prebuild/prebuildify.svg?branch=master)](https://travis-ci.org/prebuild/prebuildify)
 
 ## Usage
