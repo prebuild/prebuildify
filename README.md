@@ -34,6 +34,8 @@ If your module is using the new node core [N-API][n-api], then you can prebuild 
 prebuildify --napi
 ```
 
+Note that the flags `--all` and `--target` can add additional targets to the build, which likely are incompatible with N-API. Start with only the `--napi`flag, it should be sufficient for most scenarios.
+
 Then only remaining thing you need to do now is make your module use a prebuild if one exists
 for the platform/runtime you are using.
 
@@ -82,7 +84,7 @@ Options can be provided via (in order of precedence) the programmatic API, the C
 | CLI             | Environment          | Default                        | Description
 |:----------------|:---------------------|:-------------------------------|:------------
 | `--target -t`   | -                    | Depends.                       | One or more targets\*
-| `--all -a`      | -                    | `false`                        | Build all known targets.<br>Takes precedence over `--target` and over `--napi`.
+| `--all -a`      | -                    | `false`                        | Build all known targets.<br>Takes precedence over `--target`.
 | `--napi`        | -                    | `false`                        | Make [N-API][n-api] build(s).<br>Targets default to latest node and electron, which can be overridden with `--all` or `--target`.
 | `--debug`       | -                    | `false`                        | Make Debug build(s)
 | `--arch`        | `PREBUILD_ARCH`      | [`os.arch()`]([os-arch])       | Target architecture\*\*
