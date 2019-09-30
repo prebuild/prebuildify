@@ -34,8 +34,6 @@ If your module is using the new node core [N-API][n-api], then you can prebuild 
 prebuildify --napi
 ```
 
-Note that the flags `--all` and `--target` can add additional targets to the build, which likely are incompatible with N-API. Start with only the `--napi` flag, it should be sufficient for most scenarios.
-
 Then only remaining thing you need to do now is make your module use a prebuild if one exists
 for the platform/runtime you are using.
 
