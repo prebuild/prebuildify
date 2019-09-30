@@ -83,7 +83,7 @@ Options can be provided via (in order of precedence) the programmatic API, the C
 |:----------------|:---------------------|:-------------------------------|:------------
 | `--target -t`   | -                    | Depends.                       | One or more targets\*
 | `--all -a`      | -                    | `false`                        | Build all known targets.<br>Takes precedence over `--target`.
-| `--napi`        | -                    | `false`                        | Make [N-API][n-api] build(s).<br>Targets default to node and electron.
+| `--napi`        | -                    | `false`                        | Make [N-API][n-api] build(s).<br>Targets default to latest node and electron, which can be overridden with `--target`. Note: `--all` should be avoided for now because it includes targets that don't support N-API.
 | `--debug`       | -                    | `false`                        | Make Debug build(s)
 | `--arch`        | `PREBUILD_ARCH`      | [`os.arch()`]([os-arch])       | Target architecture\*\*
 | `--platform`    | `PREBUILD_PLATFORM`  | [`os.platform()`][os-platform] | Target platform\*\*
