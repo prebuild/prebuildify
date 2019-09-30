@@ -82,7 +82,7 @@ Options can be provided via (in order of precedence) the programmatic API, the C
 | CLI             | Environment          | Default                        | Description
 |:----------------|:---------------------|:-------------------------------|:------------
 | `--target -t`   | -                    | Depends.                       | One or more targets\*
-| `--all -a`      | -                    | `false`                        | Build all known targets.<br>Takes precedence over `--target` and `--napi`.
+| `--all -a`      | -                    | `false`                        | Build all known targets.<br>Takes precedence over `--target` and over `--napi`.
 | `--napi`        | -                    | `false`                        | Make [N-API][n-api] build(s).<br>Targets default to node and electron.
 | `--debug`       | -                    | `false`                        | Make Debug build(s)
 | `--arch`        | `PREBUILD_ARCH`      | [`os.arch()`]([os-arch])       | Target architecture\*\*
