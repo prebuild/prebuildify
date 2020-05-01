@@ -6,7 +6,7 @@
 npm install -g prebuildify
 ```
 
-With `prebuildify`, all prebuilt binaries are shipped inside the package that is published to npm, which means there's no need for a separate download step like you find in [`prebuild`](https://github.com/prebuild/prebuild). The irony of this approach is that it is faster to download all prebuilt binaries for every platform when they are bundled than it is to download a single prebuilt binary as an install script. 
+With `prebuildify`, all prebuilt binaries are shipped inside the package that is published to npm, which means there's no need for a separate download step like you find in [`prebuild`](https://github.com/prebuild/prebuild). The irony of this approach is that it is faster to download all prebuilt binaries for every platform when they are bundled than it is to download a single prebuilt binary as an install script.
 
 > Always use prebuildify --[@mafintosh](https://mafinto.sh)
 
@@ -79,29 +79,30 @@ That's it! Happy native hacking.
 
 Options can be provided via (in order of precedence) the programmatic API, the CLI or environment variables. The environment variables, whether they are defined on the outside or not, are also made available to subprocesses. For example, `prebuildify --arch arm64 --strip` sets `PREBUILD_ARCH=arm64 PREBUILD_STRIP=1`.
 
-| CLI             | Environment          | Default                        | Description
-|:----------------|:---------------------|:-------------------------------|:------------
-| `--target -t`   | -                    | Depends.                       | One or more targets\*
-| `--all -a`      | -                    | `false`                        | Build all known targets.<br>Takes precedence over `--target`.
-| `--napi`        | -                    | `false`                        | Make [N-API][n-api] build(s).<br>Targets default to latest node and electron, which can be overridden with `--target`. Note: `--all` should be avoided for now because it includes targets that don't support N-API.
-| `--debug`       | -                    | `false`                        | Make Debug build(s)
-| `--arch`        | `PREBUILD_ARCH`      | [`os.arch()`]([os-arch])       | Target architecture\*\*
-| `--platform`    | `PREBUILD_PLATFORM`  | [`os.platform()`][os-platform] | Target platform\*\*
-| `--uv`          | `PREBUILD_UV`        | From `process.versions.uv`     | Major libuv version\*\*\*
-| `--armv`        | `PREBUILD_ARMV`      | Auto-detected on ARM machines  | Numeric ARM version (e.g. 7)\*\*\*
-| `--libc`        | `PREBUILD_LIBC`      | `glibc`, `musl` on Alpine      | libc flavor\*\*\*
-| `--tag-uv`      | -                    | `false`                        | Tag prebuild with `uv`\*\*\*
-| `--tag-armv`    | -                    | `false`                        | Tag prebuild with `armv`\*\*\*
-| `--tag-libc`    | -                    | `false`                        | Tag prebuild with `libc`\*\*\*
-| `--preinstall`  | -                    | -                              | Command to run before build
-| `--postinstall` | -                    | -                              | Command to run after build
-| `--shell`       | `PREBUILD_SHELL`     | `'sh'` on Android              | Shell to spawn commands in
-| `--artifacts`   | -                    | -                              | Directory containing additional files.<br>Recursively copied into prebuild directory.
-| `--strip`       | `PREBUILD_STRIP`     | `false`                        | Enable [stripping][strip]
-| `--strip-bin`   | `PREBUILD_STRIP_BIN` | `'strip'`                      | Custom strip binary
-| `--node-gyp`    | `PREBUILD_NODE_GYP`  | `'node-gyp(.cmd)'`             | Custom `node-gyp` binary\*\*\*\*
-| `--quiet`       | -                    | `false`                        | Suppress `node-gyp` output
-| `--cwd`         | -                    | `process.cwd()`                | Working directory
+| CLI                  | Environment          | Default                        | Description
+|:---------------------|:---------------------|:-------------------------------|:------------
+| `--target -t`        | -                    | Depends.                       | One or more targets\*
+| `--all -a`           | -                    | `false`                        | Build all known targets.<br>Takes precedence over `--target`.
+| `--napi`             | -                    | `false`                        | Make [N-API][n-api] build(s).<br>Targets default to latest node which is compatible wit Electron > 3, which can be overridden with `--target`. Note: `--all` should be avoided for now because it includes targets that don't support N-API.
+| `--electron-compat   | -                    | `false`                        | Make two N-API builds, one for node and one for Electron.
+| `--debug`            | -                    | `false`                        | Make Debug build(s)
+| `--arch`             | `PREBUILD_ARCH`      | [`os.arch()`]([os-arch])       | Target architecture\*\*
+| `--platform`         | `PREBUILD_PLATFORM`  | [`os.platform()`][os-platform] | Target platform\*\*
+| `--uv`               | `PREBUILD_UV`        | From `process.versions.uv`     | Major libuv version\*\*\*
+| `--armv`             | `PREBUILD_ARMV`      | Auto-detected on ARM machines  | Numeric ARM version (e.g. 7)\*\*\*
+| `--libc`             | `PREBUILD_LIBC`      | `glibc`, `musl` on Alpine      | libc flavor\*\*\*
+| `--tag-uv`           | -                    | `false`                        | Tag prebuild with `uv`\*\*\*
+| `--tag-armv`         | -                    | `false`                        | Tag prebuild with `armv`\*\*\*
+| `--tag-libc`         | -                    | `false`                        | Tag prebuild with `libc`\*\*\*
+| `--preinstall`       | -                    | -                              | Command to run before build
+| `--postinstall`      | -                    | -                              | Command to run after build
+| `--shell`            | `PREBUILD_SHELL`     | `'sh'` on Android              | Shell to spawn commands in
+| `--artifacts`        | -                    | -                              | Directory containing additional files.<br>Recursively copied into prebuild directory.
+| `--strip`            | `PREBUILD_STRIP`     | `false`                        | Enable [stripping][strip]
+| `--strip-bin`        | `PREBUILD_STRIP_BIN` | `'strip'`                      | Custom strip binary
+| `--node-gyp`         | `PREBUILD_NODE_GYP`  | `'node-gyp(.cmd)'`             | Custom `node-gyp` binary\*\*\*\*
+| `--quiet`            | -                    | `false`                        | Suppress `node-gyp` output
+| `--cwd`              | -                    | `process.cwd()`                | Working directory
 
 \* A target takes the form of `(runtime@)?version`, where `runtime` defaults to `'node'`. For example: `-t 8.14.0 -t electron@3.0.0`. At least one of `--target`, `--all` or `--napi` must be specified.
 

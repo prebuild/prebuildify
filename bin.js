@@ -14,9 +14,10 @@ var argv = minimist(process.argv.slice(2), {
     tagUv: 'tag-uv',
     tagArmv: 'tag-armv',
     tagLibc: 'tag-libc',
+    electronCompat: 'electron-compat',
     cache: 'c'
   },
-  boolean: ['quiet', 'strip', 'napi', 'debug', 'all']
+  boolean: ['quiet', 'strip', 'napi', 'debug', 'all', 'electron-compat']
 })
 
 argv.targets = [].concat(argv.target || [])

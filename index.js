@@ -33,7 +33,7 @@ function prebuildify (opts, cb) {
     opts.libc = process.env.PREBUILD_LIBC || (isAlpine(opts) ? 'musl' : 'glibc')
   }
 
-  var targets = resolveTargets(opts.targets, opts.all, opts.napi)
+  var targets = resolveTargets(opts.targets, opts.all, opts.napi, opts.electronCompat)
 
   if (!targets.length) {
     return process.nextTick(cb, new Error('You must specify at least one target'))
@@ -275,7 +275,7 @@ function shell () {
   return os.platform() === 'android' ? 'sh' : undefined
 }
 
-function resolveTargets (targets, all, napi) {
+function resolveTargets (targets, all, napi, electronCompat) {
   targets = targets.map(function (v) {
     if (typeof v === 'object' && v !== null) return v
     if (v.indexOf('@') === -1) v = 'node@' + v
@@ -297,6 +297,8 @@ function resolveTargets (targets, all, napi) {
       abi.supportedTargets.filter(onlyNode).pop(),
       abi.supportedTargets.filter(onlyElectron).pop()
     ]
+
+    if (!electronCompat) targets.pop()
 
     if (targets[0].target === '9.0.0') targets[0].target = '9.6.1'
   }
