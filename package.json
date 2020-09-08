@@ -10,7 +10,7 @@
     "node-abi": "^2.0.0",
     "npm-run-path": "^3.1.0",
     "pump": "^3.0.0",
-    "tar-fs": "^1.16.2",
+    "tar-fs": "^2.1.0",
     "xtend": "^4.0.1"
   },
   "devDependencies": {
