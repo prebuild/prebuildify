@@ -5,7 +5,6 @@ var path = require('path')
 var fs = require('fs')
 var abi = require('node-abi')
 var mkdirp = require('mkdirp')
-var xtend = require('xtend/immutable')
 var tar = require('tar-fs')
 var pump = require('pump')
 var npmRunPath = require('npm-run-path')
@@ -13,7 +12,7 @@ var npmRunPath = require('npm-run-path')
 module.exports = prebuildify
 
 function prebuildify (opts, cb) {
-  opts = xtend({
+  opts = Object.assign({
     arch: process.env.PREBUILD_ARCH || os.arch(),
     platform: process.env.PREBUILD_PLATFORM || os.platform(),
     uv: process.env.PREBUILD_UV || uv(),
@@ -39,9 +38,9 @@ function prebuildify (opts, cb) {
     return process.nextTick(cb, new Error('You must specify at least one target'))
   }
 
-  opts = xtend(opts, {
+  opts = Object.assign(opts, {
     targets: targets,
-    env: xtend(process.env, {
+    env: Object.assign({}, process.env, {
       PREBUILD_ARCH: opts.arch,
       PREBUILD_PLATFORM: opts.platform,
       PREBUILD_UV: opts.uv,
