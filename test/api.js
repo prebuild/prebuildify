@@ -2,6 +2,7 @@ var test = require('tape')
 var path = require('path')
 var os = require('os')
 var prebuildify = require('../')
+var gt8 = process.version.match(/^v(\d+)\./)[1] > 8
 
 test('build with current node version', function (t) {
   prebuildify({
@@ -44,7 +45,7 @@ test('uv, armv and libc tags', function (t) {
   })
 })
 
-test('prefers locally installed node-gyp bin', function (t) {
+gt8 && test('prefers locally installed node-gyp bin', function (t) {
   prebuildify({
     cwd: path.join(__dirname, 'mock-gyp'),
     targets: [{ runtime: 'node', target: process.version }]
