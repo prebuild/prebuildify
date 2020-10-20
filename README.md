@@ -106,7 +106,21 @@ Options can be provided via (in order of precedence) the programmatic API, the C
 
 \* A target takes the form of `(runtime@)?version`, where `runtime` defaults to `'node'`. For example: `-t 8.14.0 -t electron@3.0.0`. At least one of `--target`, `--all` or `--napi` must be specified.
 
+```
+prebuildify --napi  -all                     # all the napi versions that are supported by Node
+prebuildify --napi --electron-compat -all    # all the napi versions that are supported by Node or Electron
+prebuildify --napi                           # last napi version supported by Node
+prebuildify --napi  --electron-compat        # last napi version supported by Node
+prebuildify --all                            # all the targets
+prebuildify -t 8.14.0 -t electron@3.0.0      # specific targets
+```
+
 \*\* The `arch` option is passed to [`node-gyp`][node-gyp] as `--target-arch`. Target architecture and platform (what you're building _for_) default to the host platform and architecture (what you're building _on_). They can be overridden for cross-compilation, in which case you'll likely also want to override the strip binary. The platform and architecture dictate the output folder. For example on Linux x64 prebuilds end up in `prebuilds/linux-x64`.
+
+```
+prebuildify --napi --electron-compat                # uses the architecture of running process
+prebuildify --arch=ia32 --napi --electron-compat    # windows x86 architecture
+```
 
 \*\*\* The filenames of prebuilds are composed of _tags_ which by default include runtime and either `napi` or `abi<version>`. For example: `electron.abi40.node`. To make more specific prebuilds (for `node-gyp-build` to select) you can add additional tags. Values for these tags are auto-detected. For example, `--napi --tag-uv --tag-armv` could result in a build called `node.napi.uv1.armv8.node` if the host machine has an ARM architecture. When cross-compiling you can override values either through the relevant option (`--tag-armv --armv 7`) or the tag (`--tag-armv 7`) as a shortcut. They're separate because you may want to build a certain version without tagging the prebuild as such, assuming that the prebuild is forward compatible.
 
