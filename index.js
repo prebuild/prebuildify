@@ -63,14 +63,15 @@ function prebuildify (opts, cb) {
   // over the local .bin folder. Counter that by (again) adding .bin to PATH.
   opts.env = npmRunPath.env({ env: opts.env, cwd: opts.cwd })
 
-  mkdirp(opts.builds).then(function () {
+  mkdirp(opts.builds, function (err) {
+    if (err) return cb(err)
     loop(opts, function (err) {
       if (err) return cb(err)
 
       if (opts.artifacts) return copyRecursive(opts.artifacts, opts.builds, cb)
       return cb()
     })
-  }).catch(function (err) { return cb(err) })
+  })
 }
 
 function loop (opts, cb) {
@@ -196,7 +197,7 @@ function build (target, runtime, opts, cb) {
     args.push('--release')
   }
 
-  mkdirp(cache).then(function () {
+  mkdirp(cache, function () {
     var child = proc.spawn(opts.nodeGyp, args, {
       cwd: opts.cwd,
       env: opts.env,
@@ -215,7 +216,7 @@ function build (target, runtime, opts, cb) {
         })
       })
     })
-  }).catch(function (err) { return console.warn(err) })
+  })
 }
 
 function findBuild (dir, cb) {
