@@ -13,9 +13,9 @@
     "tar-fs": "^2.1.0"
   },
   "devDependencies": {
+    "nan": "^2.14.2",
     "standard": "^13.0.1",
-    "tape": "^4.6.3",
-    "nan": "^2.14.2"
+    "tape": "^4.6.3"
   },
   "bin": {
     "prebuildify": "./bin.js"
