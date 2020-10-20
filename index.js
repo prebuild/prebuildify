@@ -293,9 +293,7 @@ function resolveTargets (targets, all, napi, electronCompat) {
     if (electronCompat) {
       targets.push(...abi.supportedTargets.filter(onlyNapiElectron))
     }
-  }
-  // TODO: also support --lts and get versions from travis
-  else if (all) {
+  } else if (all) { // TODO: also support --lts and get versions from travis
     targets = abi.supportedTargets
   }
 
