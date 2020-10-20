@@ -296,7 +296,7 @@ function resolveTargets (targets, all, napi, electronCompat) {
   }
   // TODO: also support --lts and get versions from travis
   else if (all) {
-    targets = abi.supportedTargets.slice(0)
+    targets = abi.supportedTargets
   }
 
   // Should be the default once napi is stable
