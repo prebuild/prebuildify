@@ -2,3 +2,5 @@ node_modules
 test/*/build
 test/*/prebuilds
 !test/mock-gyp/node_modules
+package-lock.json
+yarn.lock
