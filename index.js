@@ -189,6 +189,9 @@ function build (target, runtime, opts, cb) {
   if (runtime === 'electron') {
     args.push('--runtime=electron')
     args.push('--dist-url=https://atom.io/download/electron')
+  } else if (runtime === 'node' && [10, 11].some(buggedMajor => +target.split('.')[0] === buggedMajor)) {
+    // work around a build bug in node versions 10 and 11 https://github.com/nodejs/node-gyp/issues/1457
+    args.push('--build_v8_with_gn=false')
   }
 
   if (opts.debug) {
