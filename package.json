@@ -5,15 +5,15 @@
   "main": "index.js",
   "dependencies": {
     "execspawn": "^1.0.1",
-    "minimist": "^1.2.0",
-    "mkdirp": "^0.5.1",
-    "node-abi": "^2.0.0",
+    "mkdirp-classic": "^0.5.3",
+    "node-abi": "^2.19.1",
     "npm-run-path": "^3.1.0",
+    "minimist": "^1.2.5",
     "pump": "^3.0.0",
     "tar-fs": "^2.1.0"
   },
   "devDependencies": {
-    "nan": "^2.5.1",
+    "nan": "^2.14.2",
     "standard": "^13.0.1",
     "tape": "^4.6.3"
   },
