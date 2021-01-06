@@ -288,9 +288,16 @@ function resolveTargets (targets, all, napi, electronCompat) {
     }
   })
 
-  // TODO: also support --lts and get versions from travis
-  if (all) {
-    targets = abi.supportedTargets.slice(0)
+  // napi and all
+  if (napi && all) {
+    targets = abi.supportedTargets.filter(onlyNapiNode)
+
+    // add electron if --electron-compat is provided
+    if (electronCompat) {
+      targets.push(...abi.supportedTargets.filter(onlyNapiElectron))
+    }
+  } else if (all) { // TODO: also support --lts and get versions from travis
+    targets = abi.supportedTargets
   }
 
   // Should be the default once napi is stable
@@ -314,6 +321,16 @@ function onlyNode (t) {
 
 function onlyElectron (t) {
   return t.runtime === 'electron'
+}
+
+function onlyNapiNode (t) {
+  // n-api is supported as of Node 8 which is abi 57
+  // https://github.com/lgeiger/node-abi/blob/41217a504e4adb28a36a850c9981812c99086d3a/index.js#L96
+  return t.runtime === 'node' && parseInt(t.abi, 10) > 57
+}
+
+function onlyNapiElectron (t) {
+  return t.runtime === 'electron' && parseInt(t.abi, 10) > 57
 }
 
 function uv () {
