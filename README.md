@@ -27,10 +27,10 @@ prebuildify --all --strip
 ls prebuilds
 ```
 
-If your module is using the new node core [N-API][n-api], then you can prebuild using the `--napi` flag:
+If your module is using the node core [Node-API][node-api], which was previously known as N-API, then you can prebuild using the `--napi` flag:
 
 ``` sh
-# prebuild for n-api
+# prebuild for node-api
 prebuildify --napi
 ```
 
@@ -69,7 +69,7 @@ module.exports = binding
 ```
 
 An added benefit of this approach is that your native modules will work across multiple node and electron versions without having the user
-need to reinstall or recompile them - as long as you produce prebuilds for all versions. With N-API you only have to produce prebuilds for every runtime.
+need to reinstall or recompile them - as long as you produce prebuilds for all versions. With Node-API you only have to produce prebuilds for every runtime.
 
 When publishing your module to npm remember to include the `./prebuilds` folder.
 
@@ -83,8 +83,8 @@ Options can be provided via (in order of precedence) the programmatic API, the C
 |:---------------------|:---------------------|:-------------------------------|:------------
 | `--target -t`        | -                    | Depends.                       | One or more targets\*
 | `--all -a`           | -                    | `false`                        | Build all known targets.<br>Takes precedence over `--target`.
-| `--napi`             | -                    | `false`                        | Make [N-API][n-api] build(s).<br>Targets default to latest node which is compatible with Electron > 3, which can be overridden with `--target`. Note: `--all` should be avoided for now because it includes targets that don't support N-API.
-| `--electron-compat`  | -                    | `false`                        | Make two N-API builds, one for node and one for Electron. Useful if you support Electron <= 3.
+| `--napi`             | -                    | `false`                        | Make [Node-API][node-api] build(s).<br>Targets default to latest node which is compatible with Electron > 3, which can be overridden with `--target`. Note: `--all` should be avoided for now because it includes targets that don't support Node-API.
+| `--electron-compat`  | -                    | `false`                        | Make two Node-API builds, one for node and one for Electron. Useful if you support Electron <= 3.
 | `--debug`            | -                    | `false`                        | Make Debug build(s)
 | `--arch`             | `PREBUILD_ARCH`      | [`os.arch()`]([os-arch])       | Target architecture\*\*
 | `--platform`         | `PREBUILD_PLATFORM`  | [`os.platform()`][os-platform] | Target platform\*\*
@@ -116,7 +116,7 @@ Options can be provided via (in order of precedence) the programmatic API, the C
 
 MIT
 
-[n-api]: https://nodejs.org/api/n-api.html
+[node-api]: https://nodejs.org/api/n-api.html#n_api_node_api
 [node-gyp]: https://www.npmjs.com/package/node-gyp
 [os-arch]: https://nodejs.org/api/os.html#os_os_arch
 [os-platform]: https://nodejs.org/api/os.html#os_os_platform
