@@ -10,7 +10,7 @@ With `prebuildify`, all prebuilt binaries are shipped inside the package that is
 
 > Always use prebuildify --[@mafintosh](https://mafinto.sh)
 
-[![Build Status](https://travis-ci.org/prebuild/prebuildify.svg?branch=master)](https://travis-ci.org/prebuild/prebuildify)
+[![Test](https://github.com/prebuild/prebuildify/actions/workflows/test.yml/badge.svg)](https://github.com/prebuild/prebuildify/actions/workflows/test.yml)
 
 ## Usage
 
