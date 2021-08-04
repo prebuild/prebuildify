@@ -32,6 +32,10 @@ function prebuildify (opts, cb) {
     opts.libc = process.env.PREBUILD_LIBC || (isAlpine(opts) ? 'musl' : 'glibc')
   }
 
+  if (!opts.out) {
+    opts.out = opts.cwd
+  }
+
   var targets = resolveTargets(opts.targets, opts.all, opts.napi, opts.electronCompat)
 
   if (!targets.length) {
@@ -51,7 +55,7 @@ function prebuildify (opts, cb) {
       PREBUILD_NODE_GYP: opts.nodeGyp,
       PREBUILD_SHELL: opts.shell
     }),
-    builds: path.join(opts.cwd, 'prebuilds', opts.platform + '-' + opts.arch),
+    builds: path.join(opts.out, 'prebuilds', opts.platform + '-' + opts.arch),
     output: path.join(opts.cwd, 'build', opts.debug ? 'Debug' : 'Release')
   })
 
