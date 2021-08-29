@@ -187,7 +187,11 @@ function build (target, runtime, opts, cb) {
   args.push('--devdir=' + path.join(cache, runtime))
 
   if (opts.arch) {
-    args.push('--target_arch=' + opts.arch)
+    // Only pass the first architecture because node-gyp doesn't understand
+    // our multi-arch tuples (for example "x64+arm64"). In any case addon
+    // authors must modify their binding.gyp for multi-arch scenarios,
+    // because neither node-gyp nor prebuildify have builtin support.
+    args.push('--arch=' + opts.arch.split('+')[0])
   }
 
   if (runtime === 'electron') {
