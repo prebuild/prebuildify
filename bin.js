@@ -6,6 +6,7 @@ var prebuildify = require('./index')
 var argv = minimist(process.argv.slice(2), {
   alias: {
     target: 't',
+    excludeTarget: ['exclude-target', 'x'],
     version: 'v',
     all: 'a',
     napi: 'n-api',
@@ -21,6 +22,7 @@ var argv = minimist(process.argv.slice(2), {
 })
 
 argv.targets = [].concat(argv.target || [])
+argv.excludedTargets = [].concat(argv.excludeTarget || [])
 argv.cwd = argv.cwd || argv._[0] || '.'
 
 prebuildify(argv, function (err) {
