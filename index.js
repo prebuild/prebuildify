@@ -63,8 +63,9 @@ function prebuildify (opts, cb) {
     opts.env.CFLAGS = '-m32'
   }
   var packageData
-  if (opts.optionalPackages)
+  if (opts.optionalPackages) {
     packageData = JSON.parse(fs.readFileSync(path.join(opts.cwd, 'package.json')))
+  }
 
   // Since npm@5.6.0 npm adds its bundled node-gyp to PATH, taking precedence
   // over the local .bin folder. Counter that by (again) adding .bin to PATH.
@@ -81,7 +82,7 @@ function prebuildify (opts, cb) {
           version: packageData.version,
           os: [opts.platform],
           cpu: [opts.arch],
-          description,
+          description
         }, null, 2))
         fs.writeFileSync(path.join(opts.builds, 'index.js'), '') // needed to resolve package
         fs.writeFileSync(path.join(opts.builds, 'README.md'), description)
