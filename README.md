@@ -71,7 +71,14 @@ module.exports = binding
 An added benefit of this approach is that your native modules will work across multiple node and electron versions without having the user
 need to reinstall or recompile them - as long as you produce prebuilds for all versions. With Node-API you only have to produce prebuilds for every runtime.
 
-When publishing your module to npm remember to include the `./prebuilds` folder.
+
+## Platform-specific Packages
+As an alternate to including all prebuilds directly in your published package, you can use  `--optional-packages` to setup the prebuilds for publishing as separate platform-specific packages. Using this option, each prebuild directory will also include a package.json that specifies the target platform and architectures along with some basic package files. Each of these prebuild directories can then be published as separate packages in NPM. In addition,
+the main package should specify all the platform packages as `optionalDependencies`. When installed, NPM (or Yarn, etc.) will then only install the optional dependency with the platform/architecture matching the target machine.
+
+This provides both the efficiency of only needing to download/install the binary (or binaries) needed for the current platform, but also the key benefit of the prebuildify system in that binaries are downloaded and available as part of the normal NPM install process (no install scripts for extra downloads are necessary). When using this method, you should omit the prebuilds folder when publishing your package (since they will be separately downloaded).
+
+If you do not use this option, when publishing your module to npm, remember to include the `./prebuilds` folder.
 
 That's it! Happy native hacking.
 
@@ -94,6 +101,7 @@ Options can be provided via (in order of precedence) the programmatic API, the C
 | `--tag-uv`           | -                    | `false`                        | Tag prebuild with `uv`\*\*\*
 | `--tag-armv`         | -                    | `false`                        | Tag prebuild with `armv`\*\*\*
 | `--tag-libc`         | -                    | `false`                        | Tag prebuild with `libc`\*\*\*
+| `--optional-dependencies`| -                    | `false`                        | Add package.json and basic files for package publishing
 | `--preinstall`       | -                    | -                              | Command to run before build
 | `--postinstall`      | -                    | -                              | Command to run after build
 | `--shell`            | `PREBUILD_SHELL`     | `'sh'` on Android              | Shell to spawn commands in
