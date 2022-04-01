@@ -64,6 +64,9 @@ function prebuildify (opts, cb) {
   }
   var packageData
   if (opts.optionalPackages) {
+    if (opts.arch.indexOf('+') > -1) {
+      throw new Error('Optional packages do not support multi-arch values')
+    }
     packageData = JSON.parse(fs.readFileSync(path.join(opts.cwd, 'package.json')))
   }
 
