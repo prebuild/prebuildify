@@ -82,6 +82,12 @@ function prebuildify (opts, cb) {
           version: packageData.version,
           os: [opts.platform],
           cpu: [opts.arch],
+          // copy some of the useful package metadata, if any of these are missing, should just be skipped when stringified
+          license: packageData.license,
+          author: packageData.author,
+          repository: packageData.repository,
+          bugs: packageData.bugs,
+          homepage: packageData.homepage,
           description
         }, null, 2))
         fs.writeFileSync(path.join(opts.builds, 'index.js'), '') // needed to resolve package
