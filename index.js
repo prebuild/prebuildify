@@ -79,9 +79,11 @@ function prebuildify (opts, cb) {
     loop(opts, function (err) {
       if (err) return cb(err)
       if (opts.optionalPackages) {
-        var description = 'Platform specific binary for ' + packageData.name + ' on ' + opts.platform + ' OS with ' + opts.arch + ' architecture'
+        var packageName = packageData.name
+        var description = 'Platform specific binary for ' + packageName + ' on ' + opts.platform + ' OS with ' + opts.arch + ' architecture'
         fs.writeFileSync(path.join(opts.builds, 'package.json'), JSON.stringify({
-          name: packageData.name + '-' + opts.platform + '-' + opts.arch,
+          // append platform, and prefix with scoped name matching package name if unscoped
+          name: (packageName[0] === '@' ? '' : '@' + packageName + '/') + packageName + '-' + opts.platform + '-' + opts.arch,
           version: packageData.version,
           os: [opts.platform],
           cpu: [opts.arch],
