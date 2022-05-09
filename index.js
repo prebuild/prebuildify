@@ -63,9 +63,9 @@ function prebuildify (opts, cb) {
     opts.env.CFLAGS = '-m32'
   }
   var packageData
-  if (opts.optionalPackages) {
+  if (opts.platformPackages) {
     if (opts.arch.indexOf('+') > -1) {
-      throw new Error('Optional packages do not support multi-arch values')
+      throw new Error('Platform packages do not support multi-arch values')
     }
     packageData = JSON.parse(fs.readFileSync(path.join(opts.cwd, 'package.json')))
   }
@@ -78,7 +78,7 @@ function prebuildify (opts, cb) {
     if (err) return cb(err)
     loop(opts, function (err) {
       if (err) return cb(err)
-      if (opts.optionalPackages) {
+      if (opts.platformPackages) {
         var packageName = packageData.name
         var description = 'Platform specific binary for ' + packageName + ' on ' + opts.platform + ' OS with ' + opts.arch + ' architecture'
         fs.writeFileSync(path.join(opts.builds, 'package.json'), JSON.stringify({

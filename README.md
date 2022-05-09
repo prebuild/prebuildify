@@ -73,10 +73,10 @@ need to reinstall or recompile them - as long as you produce prebuilds for all v
 
 
 ## Platform-specific Packages
-As an alternate to including all prebuilds directly in your published package, you can use  `--optional-packages` to setup the prebuilds for publishing as separate platform-specific packages. Using this option, each prebuild directory will also include a package.json that specifies the target platform and architectures along with some basic package files. Each of these prebuild directories can then be published as separate packages in NPM. In addition,
+As an alternate to including all prebuilds directly in your published package, you can use  `--platform-packages` to setup the prebuilds for publishing as separate platform-specific packages. Using this option, each prebuild directory will also include a package.json that specifies the target platform and architectures along with some basic package files. Each of these prebuild directories can then be published as separate packages in NPM. In addition,
 the main package should specify all the platform packages as `optionalDependencies`. When installed, npm (or similar) will then only install the optional dependency with the platform & architecture matching the target machine.
 
-This provides both the efficiency of only needing to download the binaries needed for the current platform, and the key benefit of the `prebuildify` approach in that binaries are downloaded as part of the normal npm install process (without install scripts). When using this option, you should omit the `./prebuilds` folder when publishing your main package, since they will be separately downloaded by npm.
+This provides both the efficiency of only needing to install the binaries needed for the current platform, and the key benefit of the `prebuildify` approach in that binaries are downloaded as part of the normal npm install process (without install scripts). When using this option, you should omit the `./prebuilds` folder when publishing your main package, since they will be separately downloaded by npm. In npm 7+, only the matching platform package will be downloaded (and installed). In yarn and older versions of npm, all the platform packages will be downloaded (once to the package cache), but only the matching platform package will be installed.
 
 If you do not use this option, when publishing your package to npm, remember to include the `./prebuilds` folder.
 
@@ -101,7 +101,7 @@ Options can be provided via (in order of precedence) the programmatic API, the C
 | `--tag-uv`           | -                    | `false`                        | Tag prebuild with `uv`\*\*\*
 | `--tag-armv`         | -                    | `false`                        | Tag prebuild with `armv`\*\*\*
 | `--tag-libc`         | -                    | `false`                        | Tag prebuild with `libc`\*\*\*
-| `--optional-dependencies`| -                    | `false`                        | Add package.json and basic files for package publishing
+| `--platform-packages`| -                    | `false`                        | Add package.json and basic files for package publishing
 | `--preinstall`       | -                    | -                              | Command to run before build
 | `--postinstall`      | -                    | -                              | Command to run after build
 | `--shell`            | `PREBUILD_SHELL`     | `'sh'` on Android              | Shell to spawn commands in
