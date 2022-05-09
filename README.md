@@ -74,11 +74,11 @@ need to reinstall or recompile them - as long as you produce prebuilds for all v
 
 ## Platform-specific Packages
 As an alternate to including all prebuilds directly in your published package, you can use  `--optional-packages` to setup the prebuilds for publishing as separate platform-specific packages. Using this option, each prebuild directory will also include a package.json that specifies the target platform and architectures along with some basic package files. Each of these prebuild directories can then be published as separate packages in NPM. In addition,
-the main package should specify all the platform packages as `optionalDependencies`. When installed, NPM (or Yarn, etc.) will then only install the optional dependency with the platform/architecture matching the target machine.
+the main package should specify all the platform packages as `optionalDependencies`. When installed, npm (or similar) will then only install the optional dependency with the platform & architecture matching the target machine.
 
-This provides both the efficiency of only needing to download/install the binary (or binaries) needed for the current platform, but also the key benefit of the prebuildify system in that binaries are downloaded and available as part of the normal NPM install process (no install scripts for extra downloads are necessary). When using this method, you should omit the prebuilds folder when publishing your package (since they will be separately downloaded).
+This provides both the efficiency of only needing to download the binaries needed for the current platform, and the key benefit of the `prebuildify` approach in that binaries are downloaded as part of the normal npm install process (without install scripts). When using this option, you should omit the `./prebuilds` folder when publishing your main package, since they will be separately downloaded by npm.
 
-If you do not use this option, when publishing your module to npm, remember to include the `./prebuilds` folder.
+If you do not use this option, when publishing your package to npm, remember to include the `./prebuilds` folder.
 
 That's it! Happy native hacking.
 
