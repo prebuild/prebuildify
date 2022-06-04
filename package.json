@@ -1,5 +1,5 @@
 {
-  "name": "prebuildify",
+  "name": "prebuildify-platform-packages",
   "version": "5.0.0",
   "description": "Create and package prebuilds for native modules",
   "main": "index.js",
@@ -18,7 +18,7 @@
     "tape": "^4.6.3"
   },
   "bin": {
-    "prebuildify": "./bin.js"
+    "prebuildify-platform-packages": "./bin.js"
   },
   "files": [
     "bin.js",
