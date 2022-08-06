@@ -62,6 +62,13 @@ function prebuildify (opts, cb) {
   if (opts.arch === 'ia32' && opts.platform === 'linux' && opts.arch !== os.arch()) {
     opts.env.CFLAGS = '-m32'
   }
+  var packageData
+  if (opts.platformPackages) {
+    if (opts.arch.indexOf('+') > -1) {
+      throw new Error('Platform packages do not support multi-arch values')
+    }
+    packageData = JSON.parse(fs.readFileSync(path.join(opts.cwd, 'package.json')))
+  }
 
   // Since npm@5.6.0 npm adds its bundled node-gyp to PATH, taking precedence
   // over the local .bin folder. Counter that by (again) adding .bin to PATH.
@@ -71,7 +78,26 @@ function prebuildify (opts, cb) {
     if (err) return cb(err)
     loop(opts, function (err) {
       if (err) return cb(err)
-
+      if (opts.platformPackages) {
+        var packageName = packageData.name
+        var description = 'Platform specific binary for ' + packageName + ' on ' + opts.platform + ' OS with ' + opts.arch + ' architecture'
+        fs.writeFileSync(path.join(opts.builds, 'package.json'), JSON.stringify({
+          // append platform, and prefix with scoped name matching package name if unscoped
+          name: (packageName[0] === '@' ? '' : '@' + packageName + '/') + packageName + '-' + opts.platform + '-' + opts.arch,
+          version: packageData.version,
+          os: [opts.platform],
+          cpu: [opts.arch],
+          // copy some of the useful package metadata, if any of these are missing, should just be skipped when stringified
+          license: packageData.license,
+          author: packageData.author,
+          repository: packageData.repository,
+          bugs: packageData.bugs,
+          homepage: packageData.homepage,
+          description
+        }, null, 2))
+        fs.writeFileSync(path.join(opts.builds, 'index.js'), '') // needed to resolve package
+        fs.writeFileSync(path.join(opts.builds, 'README.md'), description)
+      }
       if (opts.artifacts) return copyRecursive(opts.artifacts, opts.builds, cb)
       return cb()
     })
