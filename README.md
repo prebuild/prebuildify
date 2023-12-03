@@ -103,6 +103,7 @@ Options can be provided via (in order of precedence) the programmatic API, the C
 | `--node-gyp`         | `PREBUILD_NODE_GYP`  | `'node-gyp(.cmd)'`             | Custom `node-gyp` binary\*\*\*\*
 | `--quiet`            | -                    | `false`                        | Suppress `node-gyp` output
 | `--cwd`              | -                    | `process.cwd()`                | Working directory
+| `--backend`          | -                    | `node-gyp`                     | The build backend to use, e.g. `cmake-js`
 
 \* A target takes the form of `(runtime@)?version`, where `runtime` defaults to `'node'`. For example: `-t 8.14.0 -t electron@3.0.0`. At least one of `--target`, `--all` or `--napi` must be specified.
 
@@ -111,6 +112,12 @@ Options can be provided via (in order of precedence) the programmatic API, the C
 \*\*\* The filenames of prebuilds are composed of _tags_ which by default include runtime and either `napi` or `abi<version>`. For example: `electron.abi40.node`. To make more specific prebuilds (for `node-gyp-build` to select) you can add additional tags. Values for these tags are auto-detected. For example, `--napi --tag-uv --tag-armv` could result in a build called `node.napi.uv1.armv8.node` if the host machine has an ARM architecture. When cross-compiling you can override values either through the relevant option (`--tag-armv --armv 7`) or the tag (`--tag-armv 7`) as a shortcut. They're separate because you may want to build a certain version without tagging the prebuild as such, assuming that the prebuild is forward compatible.
 
 \*\*\*\* To enable the use of forks like [`nodejs-mobile-gyp`](https://www.npmjs.com/package/nodejs-mobile-gyp).
+
+When using the `cmake-js` backend additional parameters can be passed through.
+
+```
+prebuildify --backend cmake-js -- --prefer-clang --CDUV_INCLUDE_DIR=...
+```
 
 ## License
 

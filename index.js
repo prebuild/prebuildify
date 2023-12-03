@@ -8,6 +8,7 @@ var mkdirp = require('mkdirp-classic')
 var tar = require('tar-fs')
 var pump = require('pump')
 var npmRunPath = require('npm-run-path')
+var which = require('npm-which')(process.cwd())
 
 module.exports = prebuildify
 
@@ -175,6 +176,58 @@ function run (cmd, opts, cb) {
 }
 
 function build (target, runtime, opts, cb) {
+  if (opts.backend === 'cmake-js') {
+    runCmake(target, runtime, opts, cb)
+  } else {
+    runGyp(target, runtime, opts, cb)
+  }
+}
+
+function runCmake (target, runtime, opts, cb) {
+  which('cmake-js', function (err, cmakeJsPath) {
+    if (err) return cb(err)
+
+    var args = [
+      'rebuild',
+      '--out=' + opts.output
+    ]
+
+    if (runtime !== 'napi') args.push('--runtime-version=' + target)
+    args.push('--arch=' + opts.arch)
+    if (runtime !== 'napi') args.push('--runtime=' + runtime)
+    if (runtime === 'napi' && target) {
+      args.push('--CDnapi_build_version=' + target)
+    }
+
+    if (opts.debug) args.push('--debug')
+
+    for (var arg of opts._) {
+      args.push(arg)
+    }
+
+    console.log(args);
+    var child = proc.spawn(cmakeJsPath, args, {
+      cwd: opts.cwd,
+      env: opts.env,
+      stdio: opts.quiet ? 'ignore' : 'inherit'
+    })
+
+    child.on('exit', function (code) {
+      if (code) return cb(spawnError('cmake-js', code))
+
+      findBuild(opts.output, function (err, output) {
+        if (err) return cb(err)
+
+        strip(output, opts, function (err) {
+          if (err) return cb(err)
+          cb(null, output)
+        })
+      })
+    })
+  })
+}
+
+function runGyp (target, runtime, opts, cb) {
   var args = [
     'rebuild',
     '--target=' + target
