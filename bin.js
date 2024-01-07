@@ -18,7 +18,10 @@ var argv = minimist(process.argv.slice(2), {
     electronCompat: 'electron-compat',
     cache: 'c'
   },
-  boolean: ['quiet', 'strip', 'napi', 'debug', 'all', 'electron-compat']
+  boolean: ['quiet', 'strip', 'napi', 'debug', 'all', 'electron-compat'],
+  default: {
+    napi: true
+  }
 })
 
 argv.targets = [].concat(argv.target || [])
