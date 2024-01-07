@@ -5,6 +5,7 @@ var prebuildify = require('./index')
 
 var argv = minimist(process.argv.slice(2), {
   alias: {
+    name: 'n',
     target: 't',
     version: 'v',
     all: 'a',

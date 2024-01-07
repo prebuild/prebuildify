@@ -67,13 +67,16 @@ function prebuildify (opts, cb) {
   // over the local .bin folder. Counter that by (again) adding .bin to PATH.
   opts.env = npmRunPath.env({ env: opts.env, cwd: opts.cwd })
 
-  mkdirp(opts.builds, function (err) {
+  addName(opts, function (err) {
     if (err) return cb(err)
-    loop(opts, function (err) {
+    mkdirp(opts.builds, function (err) {
       if (err) return cb(err)
+      loop(opts, function (err) {
+        if (err) return cb(err)
 
-      if (opts.artifacts) return copyRecursive(opts.artifacts, opts.builds, cb)
-      return cb()
+        if (opts.artifacts) return copyRecursive(opts.artifacts, opts.builds, cb)
+        return cb()
+      })
     })
   })
 }
@@ -108,12 +111,27 @@ function loop (opts, cb) {
   })
 }
 
-function prebuildName (target, opts) {
-  var tags = [target.runtime]
+function addName (opts, cb) {
+  if (opts.name) return cb()
+  fs.readFile(path.join(opts.cwd, 'package.json'), 'utf-8', function (err, pkg) {
+    if (err) return cb()
+    try {
+      opts.name = JSON.parse(pkg).name
+    } catch (err) {
+      // do nothing
+    }
+    cb()
+  })
+}
 
-  if (opts.napi) {
-    tags.push('napi')
-  } else {
+function encodeName (name) {
+  return name.replace(/\//g, '+')
+}
+
+function prebuildName (target, opts) {
+  var tags = [encodeName(opts.name || target.runtime)]
+
+  if (!opts.napi) {
     tags.push('abi' + abi.getAbi(target.target, target.runtime))
   }
 
