@@ -83,7 +83,7 @@ Options can be provided via (in order of precedence) the programmatic API, the C
 |:---------------------|:---------------------|:-------------------------------|:------------
 | `--target -t`        | -                    | Depends.                       | One or more targets\*
 | `--all -a`           | -                    | `false`                        | Build all known targets.<br>Takes precedence over `--target`.
-| `--napi`             | -                    | `false`                        | Make [Node-API][node-api] build(s).<br>Targets default to latest node which is compatible with Electron > 3, which can be overridden with `--target`. Note: `--all` should be avoided for now because it includes targets that don't support Node-API.
+| `--napi`             | -                    | `true`                         | Make [Node-API][node-api] build(s).<br>Targets default to latest node which is compatible with Electron > 3, which can be overridden with `--target`. Note: `--all` should be avoided for now because it includes targets that don't support Node-API.
 | `--electron-compat`  | -                    | `false`                        | Make two Node-API builds, one for node and one for Electron. Useful if you support Electron <= 3.
 | `--debug`            | -                    | `false`                        | Make Debug build(s)
 | `--arch`             | `PREBUILD_ARCH`      | [`os.arch()`]([os-arch])       | Target architecture\*\*
