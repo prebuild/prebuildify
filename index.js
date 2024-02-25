@@ -20,6 +20,9 @@ function prebuildify (opts, cb) {
     stripBin: process.env.PREBUILD_STRIP_BIN || 'strip',
     nodeGyp: process.env.PREBUILD_NODE_GYP || npmbin('node-gyp'),
     shell: process.env.PREBUILD_SHELL || shell(),
+    tagUv: process.env.PREBUILD_TAG_UV === '1' ? true : process.env.PREBUILD_TAG_UV,
+    tagArmv: process.env.PREBUILD_TAG_ARMV === '1' ? true : process.env.PREBUILD_TAG_ARMV,
+    tagLibc: process.env.PREBUILD_TAG_LIBC === '1' ? true : process.env.PREBUILD_TAG_LIBC,
     cwd: '.',
     targets: []
   }, opts)
@@ -53,7 +56,10 @@ function prebuildify (opts, cb) {
       PREBUILD_STRIP: opts.strip ? '1' : '0',
       PREBUILD_STRIP_BIN: opts.stripBin,
       PREBUILD_NODE_GYP: opts.nodeGyp,
-      PREBUILD_SHELL: opts.shell
+      PREBUILD_SHELL: opts.shell,
+      PREBUILD_TAG_UV: opts.tagUv,
+      PREBUILD_TAG_ARMV: opts.tagArmv,
+      PREBUILD_TAG_LIBC: opts.tagLibc
     }),
     builds: path.join(opts.out, 'prebuilds', opts.platform + '-' + opts.arch),
     output: path.join(opts.cwd, 'build', opts.debug ? 'Debug' : 'Release')

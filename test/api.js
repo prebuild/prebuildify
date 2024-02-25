@@ -45,6 +45,31 @@ test('uv, armv and libc tags', function (t) {
   })
 })
 
+test('uv, armv and libc tags from env var', function (t) {
+  process.env.PREBUILD_TAG_UV = '321'
+  process.env.PREBUILD_TAG_ARMV = '1' // Should be excluded (unless you run these tests on ARM)
+  process.env.PREBUILD_TAG_LIBC = '1' // Should be glibc (unless you run these tests on Alpine)
+  prebuildify({
+    cwd: path.join(__dirname, 'package'),
+    targets: [{ runtime: 'node', target: process.version }]
+  }, function (err) {
+    t.ifError(err)
+    t.doesNotThrow(function () {
+      var folder = os.platform() + '-' + os.arch()
+      var name = [
+        'node',
+        'abi' + process.versions.modules,
+        'uv321',
+        'glibc',
+        'node'
+      ].join('.')
+      var addon = require(path.join(__dirname, 'package', 'prebuilds', folder, name))
+      t.equal(addon.check(), 'prebuildify')
+    })
+    t.end()
+  })
+})
+
 gt8 && test('prefers locally installed node-gyp bin', function (t) {
   prebuildify({
     cwd: path.join(__dirname, 'mock-gyp'),
