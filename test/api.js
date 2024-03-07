@@ -12,7 +12,31 @@ test('build with current node version', function (t) {
     t.ifError(err)
     t.doesNotThrow(function () {
       var folder = os.platform() + '-' + os.arch()
-      var name = 'addon.abi' + process.versions.modules + '.node'
+      var name = 'addon.node.abi' + process.versions.modules + '.node'
+      var addon = require(path.join(__dirname, 'package', 'prebuilds', folder, name))
+      t.equal(addon.check(), 'prebuildify')
+    })
+    t.end()
+  })
+})
+
+test('runtime napi flags', function (t) {
+  prebuildify({
+    cwd: path.join(__dirname, 'package'),
+    targets: [{ runtime: 'node', target: process.version }],
+    napi: true,
+    tagLibc: true // Should be glibc (unless you run these tests on Alpine)
+  }, function (err) {
+    t.ifError(err)
+    t.doesNotThrow(function () {
+      var folder = os.platform() + '-' + os.arch()
+      var name = [
+        'addon',
+        'node',
+        'napi',
+        'glibc',
+        'node'
+      ].join('.')
       var addon = require(path.join(__dirname, 'package', 'prebuilds', folder, name))
       t.equal(addon.check(), 'prebuildify')
     })
@@ -33,6 +57,7 @@ test('uv, armv and libc tags', function (t) {
       var folder = os.platform() + '-' + os.arch()
       var name = [
         'addon',
+        'node',
         'abi' + process.versions.modules,
         'uv123',
         'glibc',
