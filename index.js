@@ -131,7 +131,9 @@ function encodeName (name) {
 function prebuildName (target, opts) {
   var tags = [encodeName(opts.name || target.runtime)]
 
-  if (!opts.napi) {
+  if (opts.napi) {
+    tags.push('napi')
+  } else {
     tags.push('abi' + abi.getAbi(target.target, target.runtime))
   }
 
