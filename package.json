@@ -4,17 +4,16 @@
   "description": "Create and package prebuilds for native modules",
   "main": "index.js",
   "dependencies": {
-    "minimist": "^1.2.5",
-    "mkdirp-classic": "^0.5.3",
-    "node-abi": "^3.3.0",
-    "npm-run-path": "^3.1.0",
+    "minimist": "^1.2.8",
+    "node-abi": "^3.62.0",
+    "npm-run-path": "^4.0.1",
     "pump": "^3.0.0",
-    "tar-fs": "^2.1.0"
+    "tar-fs": "^3.0.5"
   },
   "devDependencies": {
-    "nan": "^2.14.2",
-    "standard": "^13.0.1",
-    "tape": "^4.6.3"
+    "nan": "^2.19.0",
+    "standard": "^14.3.4",
+    "tape": "^5.7.5"
   },
   "bin": {
     "prebuildify": "./bin.js"

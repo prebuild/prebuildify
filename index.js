@@ -3,7 +3,6 @@ var os = require('os')
 var path = require('path')
 var fs = require('fs')
 var abi = require('node-abi')
-var mkdirp = require('mkdirp-classic')
 var tar = require('tar-fs')
 var pump = require('pump')
 var npmRunPath = require('npm-run-path')
@@ -68,7 +67,7 @@ function prebuildify (opts, cb) {
 
   addName(opts, function (err) {
     if (err) return cb(err)
-    mkdirp(opts.builds, function (err) {
+    fs.mkdir(opts.builds, { recursive: true }, function (err) {
       if (err) return cb(err)
       loop(opts, function (err) {
         if (err) return cb(err)
@@ -226,7 +225,7 @@ function build (target, runtime, opts, cb) {
     args.push('--release')
   }
 
-  mkdirp(cache, function () {
+  fs.mkdir(cache, { recursive: true }, function () {
     var child = proc.spawn(opts.nodeGyp, args, {
       cwd: opts.cwd,
       env: opts.env,
