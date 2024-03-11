@@ -4,8 +4,6 @@
   "description": "Create and package prebuilds for native modules",
   "main": "index.js",
   "dependencies": {
-    "execspawn": "^1.0.1",
-    "mkdirp-classic": "^0.5.3",
     "node-abi": "^3.56.0",
     "npm-run-path": "^4.0.1",
     "minimist": "^1.2.8",
