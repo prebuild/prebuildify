@@ -129,13 +129,7 @@ function encodeName (name) {
 }
 
 function prebuildName (target, opts) {
-  var tags = []
-
-  if (opts.name) {
-    tags.push(encodeName(opts.name))
-  }
-
-  tags.push(target.runtime)
+  var tags = [encodeName(opts.name || target.runtime)]
 
   if (opts.napi) {
     tags.push('napi')

@@ -12,7 +12,7 @@ test('build with current node version', function (t) {
     t.ifError(err)
     t.doesNotThrow(function () {
       var folder = os.platform() + '-' + os.arch()
-      var name = 'addon.node.abi' + process.versions.modules + '.node'
+      var name = 'addon.abi' + process.versions.modules + '.node'
       var addon = require(path.join(__dirname, 'package', 'prebuilds', folder, name))
       t.equal(addon.check(), 'prebuildify')
     })
@@ -32,7 +32,6 @@ test('runtime napi flags', function (t) {
       var folder = os.platform() + '-' + os.arch()
       var name = [
         'addon',
-        'node',
         'napi',
         'glibc',
         'node'
@@ -57,7 +56,6 @@ test('uv, armv and libc tags', function (t) {
       var folder = os.platform() + '-' + os.arch()
       var name = [
         'addon',
-        'node',
         'abi' + process.versions.modules,
         'uv123',
         'glibc',
