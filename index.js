@@ -306,7 +306,11 @@ function npmbin (name) {
 }
 
 function shell () {
-  return os.platform() === 'android' ? 'sh' : true
+  switch (os.platform()) {
+    case 'win32': return true
+    case 'android': return 'sh'
+    default: return undefined
+  }
 }
 
 function resolveTargets (targets, all, napi, electronCompat) {
