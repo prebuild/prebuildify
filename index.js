@@ -182,7 +182,7 @@ function run (cmd, opts, cb) {
     cwd: opts.cwd,
     env: opts.env,
     stdio: 'inherit',
-    shell: opts.shell,
+    shell: opts.shell || true,
     windowsHide: true
   })
 
