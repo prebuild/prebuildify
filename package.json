@@ -4,11 +4,10 @@
   "description": "Create and package prebuilds for native modules",
   "main": "index.js",
   "dependencies": {
-    "execspawn": "^1.0.1",
+    "minimist": "^1.2.5",
     "mkdirp-classic": "^0.5.3",
     "node-abi": "^3.3.0",
     "npm-run-path": "^3.1.0",
-    "minimist": "^1.2.5",
     "pump": "^3.0.0",
     "tar-fs": "^2.1.0"
   },
