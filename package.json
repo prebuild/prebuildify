@@ -6,7 +6,7 @@
   "dependencies": {
     "execspawn": "^1.0.1",
     "mkdirp-classic": "^0.5.3",
-    "node-abi": "^3.3.0",
+    "node-abi": "^3.58.0",
     "npm-run-path": "^3.1.0",
     "minimist": "^1.2.5",
     "pump": "^3.0.0",
