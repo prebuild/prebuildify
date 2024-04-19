@@ -20,5 +20,7 @@ jobs:
           python-version: '3.x'
       - name: Install
         run: npm install
+      - if: runner.os == 'Windows'
+        run: pip install setuptools  # distutils is removed from Python >= 3.12
       - name: Test
         run: npm test
