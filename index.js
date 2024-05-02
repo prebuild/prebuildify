@@ -20,7 +20,8 @@ function prebuildify (opts, cb) {
     nodeGyp: process.env.PREBUILD_NODE_GYP || npmbin('node-gyp'),
     shell: process.env.PREBUILD_SHELL || shell(),
     cwd: '.',
-    targets: []
+    targets: [],
+    excludedTargets: [],
   }, opts)
 
   if (!opts.armv) {
@@ -35,7 +36,7 @@ function prebuildify (opts, cb) {
     opts.out = opts.cwd
   }
 
-  var targets = resolveTargets(opts.targets, opts.all, opts.napi, opts.electronCompat)
+  var targets = resolveTargets(opts.targets, opts.all, opts.napi, opts.electronCompat, opts.excludedTargets)
 
   if (!targets.length) {
     return process.nextTick(cb, new Error('You must specify at least one target'))
@@ -313,16 +314,18 @@ function shell () {
   }
 }
 
-function resolveTargets (targets, all, napi, electronCompat) {
-  targets = targets.map(function (v) {
-    if (typeof v === 'object' && v !== null) return v
-    if (v.indexOf('@') === -1) v = 'node@' + v
+function parseTarget(v) {
+  if (typeof v === 'object' && v !== null) return v
+  if (v.indexOf('@') === -1) v = 'node@' + v
 
-    return {
-      runtime: v.split('@')[0],
-      target: v.split('@')[1].replace(/^v/, '')
-    }
-  })
+  return {
+    runtime: v.split('@')[0],
+    target: v.split('@')[1].replace(/^v/, '')
+  }
+}
+
+function resolveTargets (targets, all, napi, electronCompat, excludedTargets) {
+  targets = targets.map(parseTarget)
 
   // TODO: also support --lts and get versions from travis
   if (all) {
@@ -340,6 +343,13 @@ function resolveTargets (targets, all, napi, electronCompat) {
 
     if (targets[0].target === '9.0.0') targets[0].target = '9.6.1'
   }
+
+  excludedTargets = excludedTargets.map(parseTarget)
+  targets = targets.filter(function (a) {
+    return !excludedTargets.find(function (b) {
+      return a.runtime === b.runtime && a.target === b.target
+    })
+  })
 
   return targets
 }
