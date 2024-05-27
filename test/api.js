@@ -2,6 +2,8 @@ var test = require('tape')
 var path = require('path')
 var os = require('os')
 var prebuildify = require('../')
+var parseArgs = require('../parse.js')
+
 var gt8 = process.version.match(/^v(\d+)\./)[1] > 8
 
 test('build with current node version', function (t) {
@@ -54,3 +56,25 @@ gt8 && test('prefers locally installed node-gyp bin', function (t) {
     t.end()
   })
 })
+
+
+test('real world scenario: abi tags', function (t) {
+
+  var parsedOpts = parseArgs(["-t", process.version])
+
+  prebuildify(parsedOpts, function (err) {
+    t.ifError(err)
+    t.doesNotThrow(function () {
+      var folder = os.platform() + '-' + os.arch()
+      var name = [
+        'addon',
+        'abi' + process.versions.modules,
+        'node'
+      ].join('.')
+      var addon = require(path.join(__dirname, 'package', 'prebuilds', folder, name))
+      t.equal(addon.check(), 'prebuildify')
+    })
+    t.end()
+  })
+})
+

@@ -35,6 +35,11 @@ function prebuildify (opts, cb) {
     opts.out = opts.cwd
   }
 
+  // if we supply some targets manually, disable the napi build
+  if (opts.targets.length !== 0) {
+    opts.napi = false;
+  }
+
   var targets = resolveTargets(opts.targets, opts.all, opts.napi, opts.electronCompat)
 
   if (!targets.length) {
