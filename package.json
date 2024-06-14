@@ -21,7 +21,8 @@
   },
   "files": [
     "bin.js",
-    "index.js"
+    "index.js",
+    "parse.js"
   ],
   "scripts": {
     "lint": "standard",
