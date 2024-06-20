@@ -91,9 +91,9 @@ Options can be provided via (in order of precedence) the programmatic API, the C
 | `--uv`               | `PREBUILD_UV`        | From `process.versions.uv`     | Major libuv version\*\*\*
 | `--armv`             | `PREBUILD_ARMV`      | Auto-detected on ARM machines  | Numeric ARM version (e.g. 7)\*\*\*
 | `--libc`             | `PREBUILD_LIBC`      | `glibc`, `musl` on Alpine      | libc flavor\*\*\*
-| `--tag-uv`           | -                    | `false`                        | Tag prebuild with `uv`\*\*\*
-| `--tag-armv`         | -                    | `false`                        | Tag prebuild with `armv`\*\*\*
-| `--tag-libc`         | -                    | `false`                        | Tag prebuild with `libc`\*\*\*
+| `--tag-uv`           | `PREBUILD_TAG_UV`    | `false`                        | Tag prebuild with `uv`\*\*\*
+| `--tag-armv`         | `PREBUILD_TAG_ARMV`  | `false`                        | Tag prebuild with `armv`\*\*\*
+| `--tag-libc`         | `PREBUILD_TAG_LIBC`  | `false`                        | Tag prebuild with `libc`\*\*\*
 | `--preinstall`       | -                    | -                              | Command to run before build
 | `--postinstall`      | -                    | -                              | Command to run after build
 | `--shell`            | `PREBUILD_SHELL`     | `'sh'` on Android              | Shell to spawn commands in
